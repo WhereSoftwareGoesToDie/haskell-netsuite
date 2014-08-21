@@ -33,7 +33,7 @@ library
                      , blaze-builder
                      , bytestring
                      , HsOpenSSL
-                     , network-uri
+                     , network-uri >= 2.6
                      , text
                      , vector
   hs-source-dirs:      src

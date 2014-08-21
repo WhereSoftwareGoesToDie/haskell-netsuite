@@ -40,19 +40,14 @@ All the functions below will return Value objects as defined by Data.Aeson.
 
 ```
 import Data.Aeson
+import Data.HashMap
 import Data.Maybe
 import Network.URI
-
 import Netsuite.Connect
 import Netsuite.Restlet.Configuration
 import Netsuite.Types.Data
 
 let testRestletConfig = NsRestletConfig (fromJust $ parseURI "https://rest.netsuite.com/app/site/hosting/restlet.nl?script=21&deploy=5") 123456 1000 "netsuite-user@yourcompany.example.com" "mypassword" Nothing
-```
-
-Also, the following might help with building HashMap structures for various things:
-```
-import Data.HashMap
 ```
 
 Here's a rough example of fetching a customer info. Run this in ghci:
