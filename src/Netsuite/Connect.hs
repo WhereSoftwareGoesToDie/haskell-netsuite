@@ -35,6 +35,8 @@ import qualified Data.Text.IO as TextIO
 
 import Network.URI
 
+import Paths_netsuite (getDataFileName)
+
 import Netsuite.Helpers
 import Netsuite.Restlet
 import Netsuite.Restlet.Configuration
@@ -150,5 +152,6 @@ doChunkableNS cfg act = do
 -- | Loads the Netsuite restlet code.
 restletCode :: IO Text.Text
 restletCode = do
-  x <- TextIO.readFile "Support/Restlet.js"
+  file <- getDataFileName "Support/Restlet.js"
+  x <- TextIO.readFile file
   return x
