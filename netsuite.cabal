@@ -11,7 +11,8 @@ maintainer:          groberts@anchor.net.au
 copyright:           (c) 2014 Anchor Systems, Pty Ltd, and Others.
 category:            Data
 build-type:          Simple
-extra-source-files:  README.md, Support/Restlet.js
+extra-source-files:  README.md
+data-files:          Support/Restlet.js
 cabal-version:       >=1.10
 
 library
@@ -24,6 +25,7 @@ library
                      , Netsuite.Restlet
                      , Netsuite.Restlet.Response
                      , Netsuite.Types.Compile
+                     , Paths_netsuite
   build-depends:       base >=4.7 && <4.8
                      , io-streams
                      , http-streams
