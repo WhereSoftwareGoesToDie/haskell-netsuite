@@ -141,8 +141,8 @@ doNS :: NsRestletConfig -> NsAction -> IO (Either RestletError Value)
 doNS cfg act = do
   result <- restletExecute (reqJSON act) cfg
   case result of
-    RestletErrorResp x = return $ Left $ interpretError x
-    y                  = return $ Right $ responseToAeson y
+    x@(RestletErrorResp _) -> return $ Left $ interpretError x
+    y                      -> return $ Right $ responseToAeson y
   where
     reqJSON = bytesToString . BSL.unpack . restletJSON
 
@@ -151,8 +151,8 @@ doChunkableNS :: NsRestletConfig -> NsAction -> IO (Either RestletError Value)
 doChunkableNS cfg act = do
   result <- chunkableRestletExecute (reqJSON act) cfg
   case result of
-    RestletErrorResp x = return $ Left $ interpretError x
-    y                  = return $ Right $ responseToAeson y
+    x@(RestletErrorResp _) -> return $ Left $ interpretError x
+    y                      -> return $ Right $ responseToAeson y
   where
     reqJSON = bytesToString . BSL.unpack . restletJSON
 
