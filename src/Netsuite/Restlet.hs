@@ -56,7 +56,7 @@ chunkableRestletExecute' lastR isChunking s cfg =
       resp <- restletExecute' s cfg bd
       case resp of
         err@(RestletErrorResp _) ->
-          case (intepretError err) of
+          case (interpretError err) of
             BeginChunking _ -> runAgain mempty -- Begin chunking
             EndChunking _   -> return lastR -- End chunking
             _               -> return err -- Just return the error

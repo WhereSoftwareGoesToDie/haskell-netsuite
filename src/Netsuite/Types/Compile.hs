@@ -15,7 +15,7 @@ import Netsuite.Restlet.Response
 -- | Parse all objects and mconcat them.
 responseToAeson :: RestletResponse -> Value
 responseToAeson (RestletOk strings)  = mconcat $ map singleResponseToAeson strings
-responseToAeson (RestletErrorResp _) = error "Nope"
+responseToAeson (RestletErrorResp _) = error "Netsuite.Types.Compile.responseToAeson: Received a RestletErrorResp when we were expecting a RestletOk."
 
 -- | Parse a single object.
 singleResponseToAeson :: BS.ByteString -> Value

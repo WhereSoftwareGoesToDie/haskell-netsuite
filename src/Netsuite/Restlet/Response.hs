@@ -3,7 +3,7 @@
 module Netsuite.Restlet.Response (
   RestletResponse(..),
   RestletError(..),
-  intepretError
+  interpretError
   ) where
 
 import Data.Aeson
@@ -36,14 +36,17 @@ data RestletError = NotFound Int String
                   | UnknownError Int String
                   | GibberishError Int String deriving (Eq, Show)
 
-intepretError :: RestletResponse -> RestletError
-intepretError (RestletErrorResp e) = intepretError' (fst e') (snd e')
+interpretError :: RestletResponse -> RestletError
+interpretError (RestletErrorResp e) = interpretError' (fst e') (snd e')
 	where
 		e' = httpClientErrorCodeBody e
-intepretError _ = error "We should not be here"
+interpretError _ = error "We should not be here"
 
-intepretError' :: Int -> BS.ByteString -> RestletError
-intepretError' httpCode es = case mightValue of
+httpClientErrorCodeBody :: HttpClientError -> (Int, BS.ByteString)
+httpClientErrorCodeBody (HttpClientError x y) = (x, y)
+
+interpretError' :: Int -> BS.ByteString -> RestletError
+interpretError' httpCode es = case mightValue of
 	Nothing -> GibberishError httpCode "Unparseable response, expecting JSON."
 	Just jv  ->
 		case jv of
@@ -52,13 +55,13 @@ intepretError' httpCode es = case mightValue of
 					Just "RCRD_DOESNT_EXIST"       -> NotFound httpCode (getErrorMessage v)
 					Just "SSS_INVALID_SRCH_FILTER" -> InvalidSearchFilter httpCode (getErrorMessage v)
 					Just "CC_PROCESSOR_ERROR"      -> CCProcessorError httpCode (getErrorMessage v)
-					Nothing                        -> intepretErrorMsg httpCode (getErrorMessage v)
+					Nothing                        -> interpretErrorMsg httpCode (getErrorMessage v)
 					Just x                         ->
 						case x of
 							String x' ->
 								case Text.isSuffixOf (Text.pack "_ALREADY_EXISTS") x' of
 									True  -> ResourceConflict httpCode (getErrorMessage v)
-									False -> intepretErrorMsg httpCode (getErrorMessage v)
+									False -> interpretErrorMsg httpCode (getErrorMessage v)
 							_         -> error "'message' value is not a string we can use"
 			_        -> GibberishError httpCode "Couldn't extract meaningful error object."
 	where
@@ -66,7 +69,7 @@ intepretError' httpCode es = case mightValue of
 
 getJsonString :: Value -> String
 getJsonString (String x) = Text.unpack x
-getJsonString _          = error "Nope"
+getJsonString _          = error "Netsuite.Restlet.Response.getJsonString: Could not extract JSON string."
 
 getErrorMessage :: Object -> String
 getErrorMessage v = case HM.lookup (Text.pack "message") v of
@@ -76,8 +79,8 @@ getErrorMessage v = case HM.lookup (Text.pack "message") v of
 			String z' -> Text.unpack z'
 			_         -> error "'message' value is not a string we can use"
 
-intepretErrorMsg :: Int -> String -> RestletError
-intepretErrorMsg httpCode msg =
+interpretErrorMsg :: Int -> String -> RestletError
+interpretErrorMsg httpCode msg =
 	case msg of
 		"CHUNKY_MONKEY"  -> BeginChunking httpCode
 		"NO_MORE_CHUNKS" -> EndChunking httpCode
