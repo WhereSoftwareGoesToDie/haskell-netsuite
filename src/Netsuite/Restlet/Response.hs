@@ -67,10 +67,6 @@ interpretError' httpCode es = case mightValue of
 	where
 		mightValue = decode (BSL.fromStrict es) :: Maybe Value
 
-getJsonString :: Value -> String
-getJsonString (String x) = Text.unpack x
-getJsonString _          = error "Netsuite.Restlet.Response.getJsonString: Could not extract JSON string."
-
 getErrorMessage :: Object -> String
 getErrorMessage v = case HM.lookup (Text.pack "message") v of
 	Nothing -> ""
