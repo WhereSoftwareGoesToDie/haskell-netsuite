@@ -28,7 +28,7 @@ library
                      , Paths_netsuite
   build-depends:       base >=4.7 && <4.8
                      , io-streams
-                     , http-streams
+                     , http-streams >= 0.7.2.2
                      , hashmap
                      , unordered-containers
                      , aeson
