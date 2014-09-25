@@ -1,14 +1,16 @@
+{-# LANGUAGE PackageImports    #-}
+
 module Netsuite.Restlet.Configuration where
 
 import Data.Maybe
-import Network.URI
+import "network-uri" Network.URI
 
 -- | Configuration for Netsuite Restlet
 data NsRestletConfig = NsRestletConfig {
-  restletURI :: URI,
+  restletURI       :: URI,
   restletAccountID :: Integer,
-  restletRole :: Integer,
-  restletIdent :: String,
-  restletPassword :: String,
-  restletUA :: Maybe String
+  restletRole      :: Integer,
+  restletIdent     :: String,
+  restletPassword  :: String,
+  restletUA        :: Maybe String
 } deriving (Show)

@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PackageImports    #-}
 
 module Netsuite.Connect (
   retrieveNS,
@@ -34,7 +35,7 @@ import qualified Data.ByteString.Lazy as BSL
 import qualified Data.Text as Text
 import qualified Data.Text.IO as TextIO
 
-import Network.URI
+import "network-uri" Network.URI
 
 import Paths_netsuite (getDataFileName)
 
@@ -75,7 +76,7 @@ rawSearchNS cfg t fil f = do
 searchNS :: NsRestletConfig -> NsType -> NsFilters -> IO (Either RestletError Value)
 searchNS cfg t fil = do
   code <- restletCode
-  doNS cfg (NsActSearch (NsRestletCode code) t fil f)
+  doChunkableNS cfg (NsActSearch (NsRestletCode code) t fil f)
   where
     f = nsTypeFields t
 

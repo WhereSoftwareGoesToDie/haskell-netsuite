@@ -1,7 +1,8 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DeriveGeneric      #-}
+{-# LANGUAGE OverloadedStrings  #-}
+{-# LANGUAGE PackageImports     #-}
+{-# LANGUAGE RecordWildCards    #-}
 
 module Netsuite.Types.Data where
 
@@ -17,7 +18,7 @@ import qualified Data.Text as Text
 import qualified Data.Vector as Vector
 import Data.Word
 
-import Network.URI
+import "network-uri" Network.URI
 
 import Netsuite.Helpers
 import Netsuite.Types.Search

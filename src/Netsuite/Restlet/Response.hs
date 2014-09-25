@@ -34,7 +34,7 @@ data RestletError = NotFound Int String
                   | BeginChunking Int
                   | EndChunking Int
                   | UnknownError Int String
-                  | GibberishError Int String deriving (Eq, Show)
+                  | GibberishError Int String BS.ByteString deriving (Eq, Show)
 
 interpretError :: RestletResponse -> RestletError
 interpretError (RestletErrorResp e) = interpretError' (fst e') (snd e')
@@ -47,7 +47,7 @@ httpClientErrorCodeBody (HttpClientError x y) = (x, y)
 
 interpretError' :: Int -> BS.ByteString -> RestletError
 interpretError' httpCode es = case mightValue of
-	Nothing -> GibberishError httpCode "Unparseable response, expecting JSON."
+	Nothing -> GibberishError httpCode "Unparseable response, expecting JSON." es
 	Just jv  ->
 		case jv of
 			Object v ->
@@ -63,7 +63,7 @@ interpretError' httpCode es = case mightValue of
 									True  -> ResourceConflict httpCode (getErrorMessage v)
 									False -> interpretErrorMsg httpCode (getErrorMessage v)
 							_         -> error "'message' value is not a string we can use"
-			_        -> GibberishError httpCode "Couldn't extract meaningful error object."
+			_        -> GibberishError httpCode "Couldn't extract meaningful error object." es
 	where
 		mightValue = decode (BSL.fromStrict es) :: Maybe Value
 

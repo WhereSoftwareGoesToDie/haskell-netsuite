@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE PackageImports    #-}
 
 module Netsuite.Restlet (
   restletExecute,
@@ -18,7 +19,7 @@ import qualified Data.List as List
 import Data.Maybe
 import Data.Monoid
 import Data.Word
-import Network.URI
+import "network-uri" Network.URI
 
 import System.IO.Streams (InputStream, OutputStream, stdout)
 import qualified System.IO.Streams as Streams
@@ -39,7 +40,7 @@ import Netsuite.Restlet.Response
 
 -- | External restlet execution function, with quick config check.
 restletExecute :: String -> NsRestletConfig -> IO RestletResponse
-restletExecute s cfg =
+restletExecute s cfg = do
   case (configOK cfg) of
     Just bd -> restletExecute' s cfg bd
     Nothing -> error "Configuration not valid"
@@ -84,14 +85,15 @@ restletExecute' s cfg (_hostname, _port, _path) = do
     est = establish (uriScheme $ restletURI cfg) _hostname _port
     teardown = closeConnection
     process c = do
-      -- putStrLn s
       q <- buildRequest $ do
         http POST (bsPackedW8s _path)
         setContentType "application/json"
         setAccept "application/json"
         setNsAuth cfg
         setHeader "User-Agent" "NsRestlet"
+      putStrLn $ show q
       is <- Streams.fromByteString (bsPackedW8s s)
+      putStrLn $ show s
       _ <- sendRequest c q (inputStreamBody is)
       catch (RestletOk . (\s -> [s]) <$> (receiveResponse c concatHandler')) (return . RestletErrorResp)
 
