@@ -91,9 +91,9 @@ restletExecute' s cfg (_hostname, _port, _path) = do
         setAccept "application/json"
         setNsAuth cfg
         setHeader "User-Agent" "NsRestlet"
-      putStrLn $ show q
+      --putStrLn $ show q
       is <- Streams.fromByteString (bsPackedW8s s)
-      putStrLn $ show s
+      --putStrLn $ show s
       _ <- sendRequest c q (inputStreamBody is)
       catch (RestletOk . (\s -> [s]) <$> (receiveResponse c concatHandler')) (return . RestletErrorResp)
 
