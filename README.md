@@ -79,27 +79,27 @@ searchNS testRestletConfig (NsType "customer") [(NsFilter "lastmodifieddate" Not
 Creating a new contact:
 
 ```
-let d = NsData $ fromList [("firstname", "Jane"), ("lastname", "Doe"), ("email", "jane.doe@example.com")]
-let subd = NsSublistData $ fromList [("addressbook", [NsData $ fromList [("addr1", "Unit 1"), ("addr2", "123 Sesame Street"), ("city", "Sydney"), ("state", "NSW"), ("zip", "2000"), ("country", "AU")]])]
+let d = NsData $ object ["firstname" .= "Jane", "lastname" .= "Doe", "email" .= "jane.doe@example.com"]
+let subd = NsSublistData [("addressbook", [NsData $ object ["addr1" .= "Unit 1", "addr2" .= "123 Sesame Street", "city" .= "Sydney", "state" .= "NSW", "zip" .= "2000", "country" .= "AU"]])]
 createNS testRestletConfig (NsType "contact") d subd
 ```
 
 Updating an existing contact (123456):
 
 ```
-updateNS testRestletConfig (NsType "contact") (NsData $ fromList [("id", "123456"), ("firstname", "Wendy"), ("lastname", "Darling")])
+updateNS testRestletConfig (NsType "contact") (NsData $ object ["id" .= "123456", "firstname" .= "Wendy", "lastname" .= "Darling"])
 ```
 
 Updating an existing contact's address book sublist:
 
 ```
-updateSublistNS testRestletConfig (NsSubtype (NsType "contact") "addressbook") (NsId 123456) [NsData $ fromList [("addr1", "Second Star to the Left"), ("addr2", "Straight on 'til Morning"), ("city", "Lost Boys' Hideout"), ("state", "Neverland"), ("zip", "12345"), ("country", "GB")]]
+updateSublistNS testRestletConfig (NsSubtype (NsType "contact") "addressbook") (NsId 123456) [NsData $ object ["addr1" .= "Second Star to the Left", "addr2", "Straight on 'til Morning", "city" .= "Lost Boys' Hideout", "state" .= "Neverland", "zip" .= "12345", "country" .= "GB"]]
 ```
 
 Attaching a contact (123456) to a customer (12345), with a default role:
 
 ```
-attachNS testRestletConfig (NsType "customer") [(NsId 12345)] (NsType "contact") (NsId 123456) (NsData $ fromList [])
+attachNS testRestletConfig (NsType "customer") [(NsId 12345)] (NsType "contact") (NsId 123456) (NsData $ object [])
 ```
 
 Detaching a contact (123456) from a customer (12345):
@@ -123,7 +123,7 @@ invoicePdfNS testRestletConfig (NsId 123456)
 Transforming a customer to a sales order:
 
 ```
-transformNS testRestletConfig (NsType "customer") (NsType "salesorder") (NsId 12345) (NsData $ fromList [])
+transformNS testRestletConfig (NsType "customer") (NsType "salesorder") (NsId 12345) (NsData $ object [])
 ```
 
 Netsuite Types

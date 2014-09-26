@@ -77,12 +77,10 @@ testNsDataForId (NsData (Object o)) = HMS.member "id" o
 testNsDataForId _                   = False
 
 -- | Netsuite Sublist data dictionaries
-newtype NsSublistData = NsSublistData (HashMap.Map String [NsData]) deriving (Data, Typeable, Show)
+newtype NsSublistData = NsSublistData [(String, [NsData])] deriving (Data, Typeable, Show)
 
 instance ToJSON NsSublistData where
-  toJSON (NsSublistData m) = (object . map tupleToPair . HashMap.toList) m
-    where
-      tupleToPair (k, vlist) = (Text.pack k) .= (listToJsonArray $ map toJSON vlist)
+  toJSON (NsSublistData x) = object . map (\(k, v) -> (Text.pack k) .= v) $ x
 
 -- | Types of Netsuite actions to execute
 data NsAction = NsActRetrieve {
