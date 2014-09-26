@@ -14,6 +14,7 @@ module Netsuite.Connect (
   deleteNS,
   invoicePdfNS,
   transformNS,
+  newNsData,
   NsRestletConfig,
   NsType,
   NsSubtype,

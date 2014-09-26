@@ -50,6 +50,9 @@ import Netsuite.Types.Data
 let testRestletConfig = NsRestletConfig (fromJust $ parseURI "https://rest.netsuite.com/app/site/hosting/restlet.nl?script=21&deploy=5") 123456 1000 "netsuite-user@yourcompany.example.com" "mypassword" Nothing
 ```
 
+Note that we've added a couple of Aeson-manipulating functions to help you create your data.  
+For example, `newNsData` is equivalent to `NsData . object`.
+
 Here's a rough example of fetching a customer info. Run this in ghci:
 
 ```
@@ -79,27 +82,27 @@ searchNS testRestletConfig (NsType "customer") [(NsFilter "lastmodifieddate" Not
 Creating a new contact:
 
 ```
-let d = NsData $ fromList [("firstname", "Jane"), ("lastname", "Doe"), ("email", "jane.doe@example.com")]
-let subd = NsSublistData $ fromList [("addressbook", [NsData $ fromList [("addr1", "Unit 1"), ("addr2", "123 Sesame Street"), ("city", "Sydney"), ("state", "NSW"), ("zip", "2000"), ("country", "AU")]])]
+let d = newNsData ["firstname" .= "Jane", "lastname" .= "Doe", "email" .= "jane.doe@example.com"]
+let subd = NsSublistData [("addressbook", [newNsData ["addr1" .= "Unit 1", "addr2" .= "123 Sesame Street", "city" .= "Sydney", "state" .= "NSW", "zip" .= "2000", "country" .= "AU"]])]
 createNS testRestletConfig (NsType "contact") d subd
 ```
 
 Updating an existing contact (123456):
 
 ```
-updateNS testRestletConfig (NsType "contact") (NsData $ fromList [("id", "123456"), ("firstname", "Wendy"), ("lastname", "Darling")])
+updateNS testRestletConfig (NsType "contact") (newNsData ["id" .= "123456", "firstname" .= "Wendy", "lastname" .= "Darling"])
 ```
 
 Updating an existing contact's address book sublist:
 
 ```
-updateSublistNS testRestletConfig (NsSubtype (NsType "contact") "addressbook") (NsId 123456) [NsData $ fromList [("addr1", "Second Star to the Left"), ("addr2", "Straight on 'til Morning"), ("city", "Lost Boys' Hideout"), ("state", "Neverland"), ("zip", "12345"), ("country", "GB")]]
+updateSublistNS testRestletConfig (NsSubtype (NsType "contact") "addressbook") (NsId 123456) [newNsData ["addr1" .= "Second Star to the Left", "addr2", "Straight on 'til Morning", "city" .= "Lost Boys' Hideout", "state" .= "Neverland", "zip" .= "12345", "country" .= "GB"]]
 ```
 
 Attaching a contact (123456) to a customer (12345), with a default role:
 
 ```
-attachNS testRestletConfig (NsType "customer") [(NsId 12345)] (NsType "contact") (NsId 123456) (NsData $ fromList [])
+attachNS testRestletConfig (NsType "customer") [(NsId 12345)] (NsType "contact") (NsId 123456) (newNsData [])
 ```
 
 Detaching a contact (123456) from a customer (12345):
@@ -123,7 +126,7 @@ invoicePdfNS testRestletConfig (NsId 123456)
 Transforming a customer to a sales order:
 
 ```
-transformNS testRestletConfig (NsType "customer") (NsType "salesorder") (NsId 12345) (NsData $ fromList [])
+transformNS testRestletConfig (NsType "customer") (NsType "salesorder") (NsId 12345) (newNsData [])
 ```
 
 Netsuite Types
