@@ -9,6 +9,7 @@ module Netsuite.Types.Data where
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 import Data.Aeson
+import Data.Aeson.Types
 import Data.Aeson.TH
 import Data.Data
 import qualified Data.HashMap as HashMap
@@ -71,6 +72,9 @@ newtype NsData = NsData Value deriving (Data, Typeable, Show)
 
 instance ToJSON NsData where
   toJSON (NsData m) = toJSON m
+
+newNsData :: [Pair] -> NsData
+newNsData = NsData . object
 
 testNsDataForId :: NsData -> Bool
 testNsDataForId (NsData (Object o)) = HMS.member "id" o
