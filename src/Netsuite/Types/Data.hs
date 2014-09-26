@@ -12,6 +12,7 @@ import Data.Aeson
 import Data.Aeson.TH
 import Data.Data
 import qualified Data.HashMap as HashMap
+import qualified Data.HashMap.Strict as HMS
 import Data.Maybe
 import Data.Typeable
 import qualified Data.Text as Text
@@ -66,15 +67,14 @@ instance ToJSON NsFields where
   toJSON (NsFields f) = toJSON f
 
 -- | List of key/value pairs of data to send to Netsuite
-newtype NsData = NsData (HashMap.Map String String) deriving (Data, Typeable, Show)
+newtype NsData = NsData Value deriving (Data, Typeable, Show)
 
 instance ToJSON NsData where
-  toJSON (NsData m) = (object . map tupleToPair . HashMap.toList) m
-    where
-      tupleToPair (k, v) = (Text.pack k) .= (Text.pack v)
+  toJSON (NsData m) = toJSON m
 
 testNsDataForId :: NsData -> Bool
-testNsDataForId (NsData d) = HashMap.member "id" d
+testNsDataForId (NsData (Object o)) = HMS.member "id" o
+testNsDataForId _                   = False
 
 -- | Netsuite Sublist data dictionaries
 newtype NsSublistData = NsSublistData (HashMap.Map String [NsData]) deriving (Data, Typeable, Show)
