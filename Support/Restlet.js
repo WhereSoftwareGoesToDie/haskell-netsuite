@@ -2,6 +2,33 @@
 // chunks
 var CHUNK_SIZE = 50;
 
+// Utility functions
+var Util = {};
+
+// Constructs search columns from Data object.
+Util.searchFilters = function(request){
+	var filters = [];
+	for(var i = 0; i < request.data.filters.length; i++ ) {
+		var f = request.data.filters[i];
+		var vv = Util.dateSearchColumn(f[0], f[3]);
+		f[3] = vv;
+
+		filters.push(
+			apply_constructor(nlobjSearchFilter, f)
+		);
+	}
+	return filters;
+};
+
+// Transforms an ISO datestamp into a proper Netsuite search column.
+Util.dateSearchColumn = function(key, value){
+	var vv = value;
+	if (key.toLowerCase() == "lastmodifieddate") {
+		vv = Date.parse(value);
+	}
+	return vv;
+};
+
 // Okay, so this is some dodgy meta shit that I probably really shouldn't be
 // doing in javascript. It's not my fault the API is odd.
 function apply_constructor(klass, opts) {
@@ -169,14 +196,7 @@ function raw_search(request)
 	var filters = [];
 	var response = [];
 
-	// Generate filters
-	for(var i = 0; i < request.data.filters.length; i++ ) {
-		filters.push(
-			apply_constructor(
-				nlobjSearchFilter, request.data.filters[i]
-			)
-		);
-	}
+	filters = Util.searchFilters(request);
 
 	// Doesn't work when we try to create columns then supply them at
 	// creation, so we create them after we create the search.
@@ -219,14 +239,7 @@ function search(request)
 	// HTTP chunked response, it's simply us requesting a different offest
 	// each time.
 
-	var filters = [];
-	for(var i = 0; i < request.data.filters.length; i++ ) {
-		filters.push(
-			apply_constructor(
-				nlobjSearchFilter, request.data.filters[i]
-			)
-		);
-	}
+	var filters = Util.searchFilters(request);
 
 	var search = nlapiCreateSearch(request.type_id, filters, []);
 
