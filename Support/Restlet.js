@@ -24,7 +24,10 @@ Util.searchFilters = function(request){
 Util.dateSearchColumn = function(key, value){
 	var vv = value;
 	if (key.toLowerCase() == "lastmodifieddate") {
-		vv = Date.parse(value);
+		var dval = Date.parse(value);
+		if (!isNaN(dval)) {
+			vv = dval;
+		}
 	}
 	return vv;
 };
