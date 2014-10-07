@@ -26,17 +26,12 @@ Util.parseDate = function(ds){
 
 // Constructs search columns from Data object.
 Util.searchFilters = function(request){
-	var filters = [];
-	for(var i = 0; i < request.data.filters.length; i++ ) {
-		var f = request.data.filters[i];
+	return request.data.filters.map(function(f, index, arr){
+		var ff = f.slice(0);
 		var vv = Util.dateSearchColumn(f[0], f[3]);
-		f[3] = vv;
-
-		filters.push(
-			apply_constructor(nlobjSearchFilter, f)
-		);
-	}
-	return filters;
+		ff[3] = vv;
+		return apply_constructor(nlobjSearchFilter, ff);
+	});
 };
 
 // Definitions for date search columns.
@@ -100,16 +95,12 @@ function object_index_of(current_obj, value) {
 
 
 // Returns a simple record as an associative array
-function get_record_by_id(type_id, fields, id)
-{
+function get_record_by_id(type_id, fields, id) {
 	var record = nlapiLoadRecord(type_id, id);
-	var response = {};
-
-	for(var i = 0; i < fields.length; i++ ) {
-		response[fields[i]] = record.getFieldValue(fields[i]);
-	}
-
-	return(response);
+	return fields.reduce(function(obj, f){
+		obj[f] = record.getFieldValue(f);
+		return obj;
+	}, {});
 }
 
 // Transfrom from a record type, to another, given ID. The set a bunch of
@@ -170,25 +161,19 @@ function update(request)
 // Return an array of hashes representing the result set.
 function retrieve_result_set(results, fields)
 {
-	var response = [];
 	// Can't seem to get all columns back without running nlapiLoadRecord,
 	// I tried a few different ways and netsuite either returned null
 	// responses or exploded spectacularly. So, we are inefficient for now.
 	//
 	// This is what has lead to the whole configurable chunking
 	// implementation.
-	for(var i = 0; i < results.length; i++ ) {
-		var result = results[i];
-		response.push(
-			get_record_by_id(
-				result.getRecordType(),
-				fields,
-				result.getId()
-			)
+	return results.map(function(result, index, arr){
+		return get_record_by_id(
+			result.getRecordType(),
+			fields,
+			result.getId()
 		);
-	}
-
-	return response;
+	}, {});
 }
 
 // Return the requested chunk offset, which should be incremented by one for
