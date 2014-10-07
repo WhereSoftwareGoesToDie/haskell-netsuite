@@ -5,7 +5,7 @@ var CHUNK_SIZE = 50;
 // Utility functions
 var Util = {};
 
-// Parse an ISO-8601 format date the hard way.
+// Parse an ISO-8601 format date the hard way, because Date.parse is unreliable in the Netsuite JS runtime.
 Util.parseDate = function(ds){
 	if (ds.length < 1) return NaN;
 
@@ -38,10 +38,22 @@ Util.searchFilters = function(request){
 	return filters;
 };
 
+// Definitions for date search columns.
+Util._dateSearchColumns = [
+	"dateclosed",
+	"datecreated",
+	"firstvisit",
+	"formuladatetime",
+	"lastmodifieddate",
+	"lastviewed",
+	"lastvisit",
+	"paymenteventdate"
+];
+
 // Transforms an ISO datestamp into a proper Netsuite search column.
 Util.dateSearchColumn = function(key, value){
 	var vv = value;
-	if (key.toLowerCase() == "lastmodifieddate") {
+	if (Util._dateSearchColumns.indexOf(key.toLowerCase()) >= 0) {
 		var dval = Util.parseDate(value);
 		if (!isNaN(dval)) {
 			vv = dval;
