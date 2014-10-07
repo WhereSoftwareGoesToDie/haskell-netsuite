@@ -2,6 +2,11 @@
 
 ## v0
 
+### v0.3.0.0
+
+* searchNS and rawSearchNS now support ISO-8601 datestamps for certain search columns.  
+  eg. lastmodifieddate => "2014-10-06 00:00:00" or "2014-10-06"
+
 ### v0.2.0.0
 
 * Breaking change: NsData and NsSublistData now use Aeson Values as their base type instead of HashMaps.

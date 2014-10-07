@@ -2,6 +2,67 @@
 // chunks
 var CHUNK_SIZE = 50;
 
+// Utility functions
+var Util = {};
+
+// Parse an ISO-8601 format date the hard way, because Date.parse is unreliable in the Netsuite JS runtime.
+// eg. "2014-10-06 00:00:00", "2014-10-06"
+Util.parseDate = function(ds){
+	if (ds.length < 1) return NaN;
+
+	var a = ds.split(' ');
+
+	var d = a[0].split('-');
+	if (d.length < 3) return NaN;
+
+	if (a.length > 1) {
+		var t = a[1].split(':');
+		return new Date(d[0], d[1]-1, d[2], t[0], t[1], t[2]);
+	}
+	else {
+		return new Date(d[0], d[1]-1, d[2]);
+	}
+};
+
+// Constructs search columns from Data object.
+Util.searchFilters = function(request){
+	var filters = [];
+	for(var i = 0; i < request.data.filters.length; i++ ) {
+		var f = request.data.filters[i];
+		var vv = Util.dateSearchColumn(f[0], f[3]);
+		f[3] = vv;
+
+		filters.push(
+			apply_constructor(nlobjSearchFilter, f)
+		);
+	}
+	return filters;
+};
+
+// Definitions for date search columns.
+Util._dateSearchColumns = [
+	"dateclosed",
+	"datecreated",
+	"firstvisit",
+	"formuladatetime",
+	"lastmodifieddate",
+	"lastviewed",
+	"lastvisit",
+	"paymenteventdate"
+];
+
+// Transforms an ISO datestamp into a proper Netsuite search column.
+Util.dateSearchColumn = function(key, value){
+	var vv = value;
+	if (Util._dateSearchColumns.indexOf(key.toLowerCase()) >= 0) {
+		var dval = Util.parseDate(value);
+		if (!isNaN(dval)) {
+			vv = dval;
+		}
+	}
+	return vv;
+};
+
 // Okay, so this is some dodgy meta shit that I probably really shouldn't be
 // doing in javascript. It's not my fault the API is odd.
 function apply_constructor(klass, opts) {
@@ -169,14 +230,7 @@ function raw_search(request)
 	var filters = [];
 	var response = [];
 
-	// Generate filters
-	for(var i = 0; i < request.data.filters.length; i++ ) {
-		filters.push(
-			apply_constructor(
-				nlobjSearchFilter, request.data.filters[i]
-			)
-		);
-	}
+	filters = Util.searchFilters(request);
 
 	// Doesn't work when we try to create columns then supply them at
 	// creation, so we create them after we create the search.
@@ -219,14 +273,7 @@ function search(request)
 	// HTTP chunked response, it's simply us requesting a different offest
 	// each time.
 
-	var filters = [];
-	for(var i = 0; i < request.data.filters.length; i++ ) {
-		filters.push(
-			apply_constructor(
-				nlobjSearchFilter, request.data.filters[i]
-			)
-		);
-	}
+	var filters = Util.searchFilters(request);
 
 	var search = nlapiCreateSearch(request.type_id, filters, []);
 
