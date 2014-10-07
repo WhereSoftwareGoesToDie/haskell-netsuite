@@ -72,10 +72,18 @@ function apply_constructor(klass, opts) {
 
 // Asserts that the current request object has a particular property.
 // If it doesn't, it raises a 400 error.
-function assert_property(request, property_name)
+function assert_property(request, property_name, action)
 {
 	if(!request.hasOwnProperty(property_name)) {
-		argument_error("Missing mandatory argument: " + property_name);
+		if (!!action) {
+			argument_error("Missing mandatory argument from " + action + ": " + property_name);
+		}
+		else if (!!request.action) {
+			argument_error("Missing mandatory argument from " + request.action + ": " + property_name);
+		}
+		else {
+			argument_error("Missing mandatory argument: " + property_name);
+		}
 	}
 }
 
@@ -274,9 +282,7 @@ function search(request)
 // Retrieve a single record by id
 function retrieve(request)
 {
-	if(!request.data.hasOwnProperty('id')) {
-		argument_error('retrieve action requires an id');
-	}
+	assert_property(request.data, 'id', 'retrieve');
 
 	return(get_record_by_id(
 		request.type_id, request.fields, request.data.id)
@@ -288,9 +294,7 @@ function retrieve(request)
 // Delete a record by id
 function delete_id(request)
 {
-	if(!request.data.hasOwnProperty('id')) {
-		argument_error('delete action requires an id');
-	}
+	assert_property(request.data, 'id', 'delete');
 
 	// Return value is moot, should throw an error on failure
 	nlapiDeleteRecord(request.type_id, parseInt(request.data.id));
@@ -356,13 +360,8 @@ function get_sublist(record, sublist_id, fields)
 // Basically a wrapper for get_sublist()
 function fetch_sublist(request)
 {
-	if(!request.hasOwnProperty('parent_id')) {
-		argument_error("Missing mandatory argument: parent_id");
-	}
-
-	if(!request.hasOwnProperty('sublist_id')) {
-		argument_error("Missing mandatory argument: sublist_id");
-	}
+	assert_property(request, 'parent_id');
+	assert_property(request, 'sublist_id');
 
 	var record = nlapiLoadRecord(request.type_id, request.parent_id);
 	return(get_sublist(record, request.sublist_id, request.fields));
@@ -564,9 +563,7 @@ function pre_flight_check(request)
 {
 	delete(request['code']);
 
-	if (!request.hasOwnProperty('action')) {
-		argument_error("Missing mandatory argument: action");
-	}
+	assert_property(request, 'action');
 
 	// Some actions may not care about these
 	if (!request.hasOwnProperty('fields')) {
@@ -588,9 +585,7 @@ function pre_flight_check(request)
 // Returns:: An array with only element, a base64 encoded string of the
 // generated PDF
 function invoice_pdf(request) {
-	if(!request.hasOwnProperty('invoice_id')) {
-		argument_error('Missing mandatory argument: invoice_id');
-	};
+	assert_property(request, 'invoice_id');
 
 	var file = nlapiPrintRecord(
 		'TRANSACTION',
