@@ -6,6 +6,7 @@ var CHUNK_SIZE = 50;
 var Util = {};
 
 // Parse an ISO-8601 format date the hard way, because Date.parse is unreliable in the Netsuite JS runtime.
+// eg. "2014-10-06 00:00:00", "2014-10-06"
 Util.parseDate = function(ds){
 	if (ds.length < 1) return NaN;
 
