@@ -5,6 +5,24 @@ var CHUNK_SIZE = 50;
 // Utility functions
 var Util = {};
 
+// Parse an ISO-8601 format date the hard way.
+Util.parseDate = function(ds){
+	if (ds.length < 1) return NaN;
+
+	var a = ds.split(' ');
+
+	var d = a[0].split('-');
+	if (d.length < 3) return NaN;
+
+	if (a.length > 1) {
+		var t = a[1].split(':');
+		return new Date(d[0], d[1]-1, d[2], t[0], t[1], t[2]);
+	}
+	else {
+		return new Date(d[0], d[1]-1, d[2]);
+	}
+};
+
 // Constructs search columns from Data object.
 Util.searchFilters = function(request){
 	var filters = [];
@@ -24,7 +42,7 @@ Util.searchFilters = function(request){
 Util.dateSearchColumn = function(key, value){
 	var vv = value;
 	if (key.toLowerCase() == "lastmodifieddate") {
-		var dval = Date.parse(value);
+		var dval = Util.parseDate(value);
 		if (!isNaN(dval)) {
 			vv = dval;
 		}
