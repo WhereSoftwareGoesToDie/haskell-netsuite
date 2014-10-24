@@ -21,15 +21,11 @@ import Data.Word
 import GHC.Word (Word8)
 
 bsPackedW8s :: String -> BS.ByteString
-bsPackedW8s = BS.pack . strToWord8s
+bsPackedW8s = BS.pack . BSI.unpackBytes . Char8.pack 
 
 -- | Packs a string into an 8-bit bytestring.
 bs8PackedW8s :: String -> BS.ByteString
 bs8PackedW8s = BS8.pack
-
--- | Converts a string into a list of Word8s.
-strToWord8s :: String -> [Word8]
-strToWord8s = BSI.unpackBytes . Char8.pack 
 
 -- | stolen from Language.Haskell.TH.Ppr
 bytesToString :: [Word8] -> String

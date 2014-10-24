@@ -20,7 +20,7 @@ data RestletResponse = RestletOk [BS.ByteString]
 					 | RestletErrorResp HttpClientError deriving (Show)
 
 instance Monoid RestletResponse where
-	mappend (RestletOk x) (RestletOk y)    = RestletOk (x ++ y)
+	mappend (RestletOk x) (RestletOk y)        = RestletOk (x ++ y)
 	mappend (RestletOk x) (RestletErrorResp y) = RestletOk x
 	mappend (RestletErrorResp x) _             = RestletErrorResp x
 	mempty  = RestletOk []
@@ -38,8 +38,8 @@ data RestletError = NotFound Int String
 
 interpretError :: RestletResponse -> RestletError
 interpretError (RestletErrorResp e) = interpretError' (fst e') (snd e')
-	where
-		e' = httpClientErrorCodeBody e
+  where
+	e' = httpClientErrorCodeBody e
 interpretError _ = error "We should not be here"
 
 httpClientErrorCodeBody :: HttpClientError -> (Int, BS.ByteString)

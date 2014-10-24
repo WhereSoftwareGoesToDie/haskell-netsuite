@@ -14,24 +14,21 @@ import Netsuite.Restlet.Response
 
 -- | Parse all objects and mconcat them.
 responseToAeson :: RestletResponse -> Value
-responseToAeson (RestletOk strings)  = mconcat $ map singleResponseToAeson strings
 responseToAeson (RestletErrorResp _) = error "Netsuite.Types.Compile.responseToAeson: Received a RestletErrorResp when we were expecting a RestletOk."
-
--- | Parse a single object.
-singleResponseToAeson :: BS.ByteString -> Value
-singleResponseToAeson x =
-  case maybeVal of
-    Nothing -> error ("Could not decode response " ++ (bytesToString $ BS.unpack x))
-    Just y  -> y
+responseToAeson (RestletOk strings)  = mconcat $ map singleResponseToAeson strings
   where
-    maybeVal = decode (BSL.fromStrict x) :: Maybe Value
+    -- | Parse a single object.
+    singleResponseToAeson x =
+      case maybeVal x of
+        Nothing -> error ("Could not decode response " ++ (bytesToString $ BS.unpack x))
+        Just y  -> y
+    maybeVal = decode . BSL.fromStrict
 
 -- | Define a monoid instance so we can get mconcat for free.
 instance Monoid Value where
     mempty  = object []
     mappend = concatResults
-
--- | Append arrays, or take the first object of any other kind.
-concatResults :: Value -> Value -> Value
-concatResults (Array x) (Array y)   = Array $ (Vector.++) x y
-concatResults x _                   = x
+      where
+        -- | Append arrays, or take the first object of any other kind.
+        concatResults (Array x) (Array y)   = Array $ (Vector.++) x y
+        concatResults x _                   = x

@@ -11,6 +11,7 @@ import qualified Data.ByteString.Lazy as BSL
 import Data.Aeson
 import Data.Aeson.Types
 import Data.Aeson.TH
+import Data.Char (toLower)
 import Data.Data
 import qualified Data.HashMap as HashMap
 import qualified Data.HashMap.Strict as HMS
@@ -23,8 +24,8 @@ import Data.Word
 import "network-uri" Network.URI
 
 import Netsuite.Helpers
-import Netsuite.Types.Search
 
+--------------------------------------------------------------------------------
 -- | Container for Netsuite restlet code
 newtype NsRestletCode = NsRestletCode Text.Text deriving (Data, Typeable, Show)
 
@@ -34,12 +35,14 @@ getCode (NsRestletCode x) = x
 instance ToJSON NsRestletCode where
   toJSON (NsRestletCode s) = toJSON s
 
+--------------------------------------------------------------------------------
 -- | Netsuite record type
 newtype NsType = NsType String deriving (Data, Typeable, Show)
 
 instance ToJSON NsType where
   toJSON (NsType s) = toJSON s
 
+--------------------------------------------------------------------------------
 -- | Netsuite record subtype
 data NsSubtype = NsSubtype NsType String deriving (Data, Typeable, Show)
 
@@ -49,24 +52,28 @@ instance ToJSON NsSubtype where
 getTypeFromSubtype :: NsSubtype -> NsType
 getTypeFromSubtype (NsSubtype t _) = t
 
+--------------------------------------------------------------------------------
 -- | Netsuite entity ID, for requests that only take an ID
 newtype NsId = NsId Integer deriving (Data, Typeable, Show)
 
 instance ToJSON NsId where
-  toJSON (NsId _id) = String $ Text.pack $ show _id
+  toJSON (NsId _id) = String . Text.pack . show $ _id
 
+--------------------------------------------------------------------------------
 -- | Netsuite entity ID, wrapped up in a data object
 newtype NsDataId = NsDataId Integer deriving (Data, Typeable, Show)
 
 instance ToJSON NsDataId where
   toJSON (NsDataId _id) = object ["id" .= show _id]
 
+--------------------------------------------------------------------------------
 -- | List of Netsuite fields to retrieve
 newtype NsFields = NsFields [String] deriving (Data, Typeable, Show)
 
 instance ToJSON NsFields where
   toJSON (NsFields f) = toJSON f
 
+--------------------------------------------------------------------------------
 -- | List of key/value pairs of data to send to Netsuite
 newtype NsData = NsData Value deriving (Data, Typeable, Show)
 
@@ -80,12 +87,14 @@ testNsDataForId :: NsData -> Bool
 testNsDataForId (NsData (Object o)) = HMS.member "id" o
 testNsDataForId _                   = False
 
+--------------------------------------------------------------------------------
 -- | Netsuite Sublist data dictionaries
 newtype NsSublistData = NsSublistData [(String, [NsData])] deriving (Data, Typeable, Show)
 
 instance ToJSON NsSublistData where
   toJSON (NsSublistData x) = object . map (\(k, v) -> (Text.pack k) .= v) $ x
 
+--------------------------------------------------------------------------------
 -- | Types of Netsuite actions to execute
 data NsAction = NsActRetrieve {
     nsarCode       :: NsRestletCode,
@@ -253,5 +262,86 @@ instance ToJSON NsAction where
            , "fields"         .= nstrFields
              ]
 
-restletJSON :: NsAction -> BSL.ByteString
-restletJSON = encode
+--------------------------------------------------------------------------------
+-- | List of search columns
+type NsSearchCols = [NsSearchCol]
+
+-- | Search column definition
+-- | May be a single field for the current table
+-- | May also reach across table joins
+data NsSearchCol = NsSearchCol String (Maybe String) deriving (Data, Typeable, Show)
+
+instance ToJSON NsSearchCol where
+    toJSON (NsSearchCol colName joinName) =
+        listToJsonArray . maybe base ((++) base . take 1 . repeat . stringToJsonString) $ joinName
+      where
+        base = [stringToJsonString colName]
+
+-- | Converts lists of lists of strings into search columns
+toSearchCols :: [[String]] -> NsSearchCols
+toSearchCols l = Prelude.map toSearchCol l
+  where
+    toSearchCol (n:[]) = NsSearchCol n Nothing
+    toSearchCol (n:j:_) = NsSearchCol n (Just j)
+
+--------------------------------------------------------------------------------
+-- | List of search filters
+type NsFilters = [NsFilter]
+
+-- | Constructing a search filter
+-- | eg. NsFilter "lastmodifieddate" Nothing OnOrAfter "2014-08-12"
+data NsFilter = NsFilter String (Maybe String) NsSearchOp (Maybe String) (Maybe String) deriving (Data, Typeable, Show)
+
+instance ToJSON NsFilter where
+    toJSON = listToJsonArray . buildFilterArr
+      where
+        buildFilterArr (NsFilter name join op value1 value2) = maybe base ((++) base . v2) value2
+            where
+                base = [
+                    stringToJsonString name,
+                    maybe Null stringToJsonString join,
+                    toJSON op,
+                    maybe Null stringToJsonString value1]
+                v2 x = [stringToJsonString x]
+
+--------------------------------------------------------------------------------
+-- | All the types of search operators we have
+data NsSearchOp = After                   |
+                  AnyOf                   |
+                  Before                  |
+                  Between                 |
+                  Contains                |
+                  DoesNotContain          |
+                  DoesNotStartWith        |
+                  EqualTo                 |
+                  GreaterThan             |
+                  GreaterThanOrEqualTo    |
+                  HasKeywords             |
+                  Is                      |
+                  IsEmpty                 |
+                  IsNot                   |
+                  IsNotEmpty              |
+                  LessThan                |
+                  LessThanOrEqualTo       |
+                  NoneOf                  |
+                  NotAfter                |
+                  NotBefore               |
+                  NotBetween              |
+                  NotEqualTo              |
+                  NotGreaterThan          |
+                  NotGreaterThanOrEqualTo |
+                  NotLessThan             |
+                  NotLessThanOrEqualTo    |
+                  NotOn                   |
+                  NotOnOrAfter            |
+                  NotOnOrBefore           |
+                  NotWithin               |
+                  On                      |
+                  OnOrAfter               |
+                  OnOrBefore              |
+                  StartWith               |
+                  Within
+                  deriving (Data, Typeable, Show)
+
+instance ToJSON NsSearchOp where
+    toJSON = String . Text.pack . (Prelude.map toLower) . show
