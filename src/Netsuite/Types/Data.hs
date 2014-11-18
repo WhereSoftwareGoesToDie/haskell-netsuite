@@ -60,13 +60,12 @@ import Netsuite.Types.Fields.Core
 
 --------------------------------------------------------------------------------
 -- | Container for Netsuite restlet code
-newtype NsRestletCode = NsRestletCode Text.Text deriving (Data, Typeable, Show)
-
-getCode :: NsRestletCode -> Text.Text
-getCode (NsRestletCode x) = x
+data NsRestletCode = NsRestletCode {
+    getCode :: Text.Text
+} deriving (Data, Typeable, Show)
 
 instance ToJSON NsRestletCode where
-    toJSON (NsRestletCode s) = toJSON s
+    toJSON = toJSON . getCode
 
 --------------------------------------------------------------------------------
 -- | Netsuite entity ID, for requests that only take an ID
