@@ -34,8 +34,6 @@ module Netsuite.Types.Data (
     typeFields
 ) where
 
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Lazy as BSL
 import Data.Aeson
 import Data.Aeson.Types
 import Data.Aeson.TH
@@ -47,10 +45,6 @@ import Data.Maybe
 import Data.Monoid
 import Data.Typeable
 import qualified Data.Text as Text
-import qualified Data.Vector as Vector
-import Data.Word
-
-import "network-uri" Network.URI
 
 import Netsuite.Helpers
 import Netsuite.Types.Data.Core
