@@ -16,20 +16,21 @@ module Netsuite.Connect (
   transformNS,
   newNsData,
   NsRestletConfig (..),
-  NsType (..),
-  NsSubtype (..),
   NsData (..),
   NsSublistData (..),
-  NsDataId (..),
-  NsId (..),
   NsFilters,
   NsFilter (..),
   NsSearchOp (..),
   NsSearchCols,
   NsSearchCol,
   RestletError(..),
-  toSearchCols
-  ) where
+  toSearchCols,
+
+  IsNsType,
+  IsNsSubtype,
+  IsNsId,
+  IsNsDataId
+) where
 
 import Data.Aeson
 import qualified Data.ByteString.Lazy as BSL
@@ -51,91 +52,94 @@ import Netsuite.Types.Fields
 import Network.Http.Client (HttpClientError)
 
 -- | Retrieves an object from Netsuite.
-retrieveNS :: NsRestletConfig -> NsType -> NsDataId -> IO (Either RestletError Value)
+retrieveNS :: (IsNsType t, IsNsDataId a) => NsRestletConfig -> t -> a -> IO (Either RestletError Value)
 retrieveNS cfg t i = do
     code <- restletCode
-    doNS cfg (NsActRetrieve (NsRestletCode code) t i f)
+    doNS cfg (NsActRetrieve (NsRestletCode code) t' (toNsDataId i) f)
   where
-    f = nsTypeFields t
+    t' = toNsType t
+    f  = typeFields cfg t'
 
 -- | Retrieves an object's sublists from Netsuite.
-fetchSublistNS :: NsRestletConfig -> NsSubtype -> NsId -> IO (Either RestletError Value)
+fetchSublistNS :: (IsNsSubtype st, IsNsId a) => NsRestletConfig -> st -> a -> IO (Either RestletError Value)
 fetchSublistNS cfg st i = do
     code <- restletCode
-    doNS cfg (NsActFetchSublist (NsRestletCode code) st i f)
+    doNS cfg (NsActFetchSublist (NsRestletCode code) st' (toNsId i) f)
   where
-    f = nsSubtypeFields st
+    st' = toNsSubtype st
+    f   = typeFields cfg st'
 
 -- | Does a raw search in Netsuite.
-rawSearchNS :: NsRestletConfig -> NsType -> NsFilters -> NsSearchCols -> IO (Either RestletError Value)
+rawSearchNS :: (IsNsType t) => NsRestletConfig -> t -> NsFilters -> NsSearchCols -> IO (Either RestletError Value)
 rawSearchNS cfg t fil f = do
     code <- restletCode
-    doNS cfg (NsActRawSearch (NsRestletCode code) t fil f)
+    doNS cfg (NsActRawSearch (NsRestletCode code) (toNsType t) fil f)
 
 -- | Does an object search in Netsuite.
-searchNS :: NsRestletConfig -> NsType -> NsFilters -> IO (Either RestletError Value)
+searchNS :: (IsNsType t) => NsRestletConfig -> t -> NsFilters -> IO (Either RestletError Value)
 searchNS cfg t fil = do
     code <- restletCode
-    doChunkableNS cfg (NsActSearch (NsRestletCode code) t fil f)
+    doChunkableNS cfg (NsActSearch (NsRestletCode code) (toNsType t) fil f)
   where
-    f = nsTypeFields t
+    f = typeFields cfg (toNsType t)
 
 -- | Creates an object in Netsuite.
-createNS :: NsRestletConfig -> NsType -> NsData -> NsSublistData -> IO (Either RestletError Value)
+createNS :: (IsNsType t) => NsRestletConfig -> t -> NsData -> NsSublistData -> IO (Either RestletError Value)
 createNS cfg t d sd = do
     code <- restletCode
-    doNS cfg (NsActCreate (NsRestletCode code) t d sd f)
+    doNS cfg (NsActCreate (NsRestletCode code) (toNsType t) d sd f)
   where
-    f = nsTypeFields t
+    f = typeFields cfg (toNsType t)
 
 -- | Attaches an object to another in Netsuite.
-attachNS :: NsRestletConfig -> NsType -> [NsId] -> NsType -> NsId -> NsData -> IO (Either RestletError Value)
+attachNS :: (IsNsType t, IsNsId a) => NsRestletConfig -> t -> [a] -> t -> a -> NsData -> IO (Either RestletError Value)
 attachNS cfg targetType targetIDs attType attID attrs = do
     code <- restletCode
-    doNS cfg (NsActAttach (NsRestletCode code) targetType targetIDs attType attID attrs)
+    doNS cfg (NsActAttach (NsRestletCode code) (toNsType targetType) (map toNsId targetIDs) (toNsType attType) (toNsId attID) attrs)
 
 -- | Detaches an object from another in Netsuite.
-detachNS :: NsRestletConfig -> NsType -> [NsId] -> NsType -> NsId -> IO (Either RestletError Value)
+detachNS :: (IsNsType t, IsNsId a) => NsRestletConfig -> t -> [a] -> t -> a -> IO (Either RestletError Value)
 detachNS cfg targetType targetIDs detType detID = do
     code <- restletCode
-    doNS cfg (NsActDetach (NsRestletCode code) targetType targetIDs detType detID)
+    doNS cfg (NsActDetach (NsRestletCode code) (toNsType targetType) (map toNsId targetIDs) (toNsType detType) (toNsId detID))
 
 -- | Updates an object in Netsuite.
-updateNS :: NsRestletConfig -> NsType -> NsData -> IO (Either RestletError Value)
+updateNS :: (IsNsType t) => NsRestletConfig -> t -> NsData -> IO (Either RestletError Value)
 updateNS cfg t d = 
     if testNsDataForId d
     then do
         code <- restletCode
-        doNS cfg (NsActUpdate (NsRestletCode code) t d f)
+        doNS cfg (NsActUpdate (NsRestletCode code) (toNsType t) d f)
     else error "Update data does not contain ID."
   where
-    f = nsTypeFields t
+    f = typeFields cfg (toNsType t)
 
 -- | Updates an object's sublist in Netsuite.
-updateSublistNS :: NsRestletConfig -> NsSubtype -> NsId -> [NsData] -> IO (Either RestletError Value)
+updateSublistNS :: (IsNsSubtype st, IsNsId a) => NsRestletConfig -> st -> a -> [NsData] -> IO (Either RestletError Value)
 updateSublistNS cfg st i d = do
     code <- restletCode
-    doNS cfg (NsActUpdateSublist (NsRestletCode code) st i d)
+    doNS cfg (NsActUpdateSublist (NsRestletCode code) (toNsSubtype st) (toNsId i) d)
 
 -- | Deletes an object from Netsuite.
-deleteNS :: NsRestletConfig -> NsType -> NsDataId -> IO (Either RestletError Value)
+deleteNS :: (IsNsType t, IsNsDataId a) => NsRestletConfig -> t -> a -> IO (Either RestletError Value)
 deleteNS cfg t i = do
     code <- restletCode
-    doNS cfg (NsActDelete (NsRestletCode code) t i)
+    doNS cfg (NsActDelete (NsRestletCode code) (toNsType t) (toNsDataId i))
 
 -- | Fetches an Invoice PDF by ID.
-invoicePdfNS :: NsRestletConfig -> NsId -> IO (Either RestletError Value)
+invoicePdfNS :: (IsNsId a) => NsRestletConfig -> a -> IO (Either RestletError Value)
 invoicePdfNS cfg i = do
     code <- restletCode
-    doNS cfg (NsActInvoicePDF (NsRestletCode code) i)
+    doNS cfg (NsActInvoicePDF (NsRestletCode code) (toNsId i))
 
 -- | Transforms a Netsuite record to another type.
-transformNS :: NsRestletConfig -> NsType -> NsId -> NsType -> NsData -> IO (Either RestletError Value)
+transformNS :: (IsNsType t, IsNsId a) => NsRestletConfig -> t -> a -> t -> NsData -> IO (Either RestletError Value)
 transformNS cfg st sid tt d = do
     code <- restletCode
-    doNS cfg (NsActTransform (NsRestletCode code) st sid tt d f)
+    doNS cfg (NsActTransform (NsRestletCode code) (toNsType st) (toNsId sid) tt' d f)
   where
-    f = nsTypeFields tt
+    tt' = toNsType tt
+    f   = typeFields cfg tt'
 
 -- | Performs a Netsuite restlet action.
 doNS :: NsRestletConfig -> NsAction -> IO (Either RestletError Value)

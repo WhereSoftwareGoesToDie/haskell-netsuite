@@ -1,14 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Netsuite.Types.Fields where
-
-import Netsuite.Types.Data
+module Netsuite.Types.Fields (
+    nsTypeFields,
+    nsSubtypeFields,
+) where
 
 -- | Lists of fields per Netsuite record type
-nsTypeFields :: NsType -> NsFields
+nsTypeFields :: [String] -> [String]
 
 -- | Customer
-nsTypeFields (NsType "customer") = NsFields [
+nsTypeFields ("customer":_) = [
   "id",
   "entityid",
   "accessrole",
@@ -132,7 +133,7 @@ nsTypeFields (NsType "customer") = NsFields [
   "weblead"]
 
 -- | Contact
-nsTypeFields (NsType "contact") = NsFields [
+nsTypeFields ("contact":_) = [
   "id",
   "role",
   "accessrole",
@@ -257,7 +258,7 @@ nsTypeFields (NsType "contact") = NsFields [
   "weblead"]
 
 -- | Credit Memo
-nsTypeFields (NsType "creditmemo") = NsFields [
+nsTypeFields ("creditmemo":_) = [
   "id",
   "account",
   "althandlingcost",
@@ -368,7 +369,7 @@ nsTypeFields (NsType "creditmemo") = NsFields [
   "vsoeautocalc"]
 
 -- | Invoice
-nsTypeFields (NsType "invoice") = NsFields [
+nsTypeFields ("invoice":_) = [
   "id",
   "account",
   "althandlingcost",
@@ -511,7 +512,7 @@ nsTypeFields (NsType "invoice") = NsFields [
   "vsoeautocalc"]
 
 -- | Customer Payment
-nsTypeFields (NsType "customerpayment") = NsFields [
+nsTypeFields ("customerpayment":_) = [
   "id",
   "account",
   "allowemptycards",
@@ -588,7 +589,7 @@ nsTypeFields (NsType "customerpayment") = NsFields [
   "validfrom"]
 
 -- | Customer Deposit
-nsTypeFields (NsType "customerdeposit") = NsFields [
+nsTypeFields ("customerdeposit":_) = [
   "id",
   "account",
   "allowemptycards",
@@ -658,7 +659,7 @@ nsTypeFields (NsType "customerdeposit") = NsFields [
   "validfrom"]
 
 -- | Non-Inventory Item
-nsTypeFields (NsType "noninventoryitem") = NsFields [
+nsTypeFields ("noninventoryitem":_) = [
   "id",
   "amortizationperiod",
   "amortizationtemplate",
@@ -875,10 +876,11 @@ nsTypeFields (NsType "noninventoryitem") = NsFields [
   "weightunit",
   "weightunits",
   "willship",
-  "yahooproductfeed"]
+  "yahooproductfeed"
+  ]
 
 -- | Discount Item
-nsTypeFields (NsType "discountitem") = NsFields [
+nsTypeFields ("discountitem":_) = [
   "id",
   "account",
   "availabletopartners",
@@ -905,8 +907,18 @@ nsTypeFields (NsType "discountitem") = NsFields [
   "upccode",
   "vendorname"]
 
+-- | Price level
+nsTypeFields ("pricelevel":_) = [
+  "id",
+  "discountpct",
+  "externalid",
+  "isinactive",
+  "isonline",
+  "name",
+  "updateexistingprices"]
+
 -- | Sales Order
-nsTypeFields (NsType "salesorder") = NsFields [
+nsTypeFields ("salesorder":_) = [
   "id",
   "allowemptycards",
   "althandlingcost",
@@ -1068,13 +1080,13 @@ nsTypeFields (NsType "salesorder") = NsFields [
   "vsoeautocalc"]
 
 -- | Catch-all
-nsTypeFields _ = NsFields []
+nsTypeFields _ = []
 
 -- | Lists of fields per Netsuite record type
-nsSubtypeFields :: NsSubtype -> NsFields
+nsSubtypeFields :: [String] -> [String]
 
 -- | Customer > Address Book
-nsSubtypeFields (NsSubtype (NsType "customer") "addressbook") = NsFields [
+nsSubtypeFields ("customer":"addressbook":_) = [
   "id",
   "internalid",
   "addr1",
@@ -1097,7 +1109,7 @@ nsSubtypeFields (NsSubtype (NsType "customer") "addressbook") = NsFields [
   "zip"]
 
 -- | Customer > Contact Roles
-nsSubtypeFields (NsSubtype (NsType "customer") "contactroles") = NsFields [
+nsSubtypeFields ("customer":"contactroles":_) = [
   "contact",
   "email",
   "giveaccess",
@@ -1107,7 +1119,7 @@ nsSubtypeFields (NsSubtype (NsType "customer") "contactroles") = NsFields [
   "strength"]
 
 -- | Customer > Credit Cards
-nsSubtypeFields (NsSubtype (NsType "customer") "creditcards") = NsFields [
+nsSubtypeFields ("customer":"creditcards":_) = [
   "ccdefault",
   "ccexpiredate",
   "ccmemo",
@@ -1120,7 +1132,7 @@ nsSubtypeFields (NsSubtype (NsType "customer") "creditcards") = NsFields [
   "validfrom"]
 
 -- | Customer > Currency
-nsSubtypeFields (NsSubtype (NsType "customer") "currency") = NsFields [
+nsSubtypeFields ("customer":"currency":_) = [
   "balance",
   "consolbalance",
   "consoldepositbalance",
@@ -1136,26 +1148,26 @@ nsSubtypeFields (NsSubtype (NsType "customer") "currency") = NsFields [
   "unbilledorders"]
 
 -- | Customer > Download
-nsSubtypeFields (NsSubtype (NsType "customer") "download") = NsFields [
+nsSubtypeFields ("customer":"download":_) = [
   "expiration",
   "file",
   "licensecode",
   "remainingdownloads"]
 
 -- | Customer > Group Pricing
-nsSubtypeFields (NsSubtype (NsType "customer") "grouppricing") = NsFields [
+nsSubtypeFields ("customer":"grouppricing":_) = [
   "group",
   "level"]
 
 -- | Customer > Item Pricing
-nsSubtypeFields (NsSubtype (NsType "customer") "itempricing") = NsFields [
+nsSubtypeFields ("customer":"itempricing":_) = [
   "currency",
   "item",
   "level",
   "price"]
 
 -- | Customer > Partners
-nsSubtypeFields (NsSubtype (NsType "customer") "partners") = NsFields [
+nsSubtypeFields ("customer":"partners":_) = [
   "contribution",
   "customer",
   "id",
@@ -1164,7 +1176,7 @@ nsSubtypeFields (NsSubtype (NsType "customer") "partners") = NsFields [
   "partnerrole"]
 
 -- | Customer > Sales Team
-nsSubtypeFields (NsSubtype (NsType "customer") "salesteam") = NsFields [
+nsSubtypeFields ("customer":"salesteam":_) = [
   "contribution",
   "customer",
   "employee",
@@ -1174,7 +1186,7 @@ nsSubtypeFields (NsSubtype (NsType "customer") "salesteam") = NsFields [
   "salesrole"]
 
 -- | Contact > Address Book
-nsSubtypeFields (NsSubtype (NsType "contact") "addressbook") = NsFields [
+nsSubtypeFields ("contact":"addressbook":_) = [
   "id",
   "internalid",
   "addr1",
@@ -1196,7 +1208,7 @@ nsSubtypeFields (NsSubtype (NsType "contact") "addressbook") = NsFields [
   "zip"]
 
 -- | Invoice > Expense Cost
-nsSubtypeFields (NsSubtype (NsType "invoice") "expcost") = NsFields [
+nsSubtypeFields ("invoice":"expcost":_) = [
   "amortizationperiod",
   "amortizationtype",
   "amount",
@@ -1219,7 +1231,7 @@ nsSubtypeFields (NsSubtype (NsType "invoice") "expcost") = NsFields [
   "url"]
 
 -- | Invoice > Line Item
-nsSubtypeFields (NsSubtype (NsType "invoice") "item") = NsFields [
+nsSubtypeFields ("invoice":"item":_) = [
   "account",
   "amortizationperiod",
   "amortizationtype",
@@ -1274,7 +1286,7 @@ nsSubtypeFields (NsSubtype (NsType "invoice") "item") = NsFields [
   "vsoesopgroup"]
 
 -- | Invoice > Line Item Cost
-nsSubtypeFields (NsSubtype (NsType "invoice") "itemcost") = NsFields [
+nsSubtypeFields ("invoice":"itemcost":_) = [
   "amortizationperiod",
   "amortizationtype",
   "amount",
@@ -1302,7 +1314,7 @@ nsSubtypeFields (NsSubtype (NsType "invoice") "itemcost") = NsFields [
   "url"]
 
 -- | Invoice > Partners
-nsSubtypeFields (NsSubtype (NsType "invoice") "partners") = NsFields [
+nsSubtypeFields ("invoice":"partners":_) = [
   "contribution",
   "id",
   "isprimary",
@@ -1311,7 +1323,7 @@ nsSubtypeFields (NsSubtype (NsType "invoice") "partners") = NsFields [
   "transaction"]
 
 -- | Invoice > Sales Team
-nsSubtypeFields (NsSubtype (NsType "invoice") "salesteam") = NsFields [
+nsSubtypeFields ("invoice":"salesteam":_) = [
   "contribution",
   "employee",
   "id",
@@ -1321,7 +1333,7 @@ nsSubtypeFields (NsSubtype (NsType "invoice") "salesteam") = NsFields [
   "transaction"]
 
 -- | Invoice > Shipping Group
-nsSubtypeFields (NsSubtype (NsType "invoice") "shipgroup") = NsFields [
+nsSubtypeFields ("invoice":"shipgroup":_) = [
   "destinationaddress",
   "handlingrate",
   "id",
@@ -1332,7 +1344,7 @@ nsSubtypeFields (NsSubtype (NsType "invoice") "shipgroup") = NsFields [
   "weight"]
 
 -- | Invoice > Time
-nsSubtypeFields (NsSubtype (NsType "invoice") "time") = NsFields [
+nsSubtypeFields ("invoice":"time":_) = [
   "amortizationperiod",
   "amortizationtype",
   "amount",
@@ -1354,7 +1366,7 @@ nsSubtypeFields (NsSubtype (NsType "invoice") "time") = NsFields [
   "url"]
 
 -- | Customer Payment > Invoices Applied To
-nsSubtypeFields (NsSubtype (NsType "customerpayment") "apply") = NsFields [
+nsSubtypeFields ("customerpayment":"apply":_) = [
   "amount",
   "apply",
   "applydate",
@@ -1373,7 +1385,7 @@ nsSubtypeFields (NsSubtype (NsType "customerpayment") "apply") = NsFields [
   "url"]
 
 -- | Customer Payment > Credit
-nsSubtypeFields (NsSubtype (NsType "customerpayment") "credit") = NsFields [
+nsSubtypeFields ("customerpayment":"credit":_) = [
   "amount",
   "apply",
   "createdfrom",
@@ -1388,7 +1400,7 @@ nsSubtypeFields (NsSubtype (NsType "customerpayment") "credit") = NsFields [
   "url"]
 
 -- | Customer Payment > Deposit
-nsSubtypeFields (NsSubtype (NsType "customerpayment") "deposit") = NsFields [
+nsSubtypeFields ("customerpayment":"deposit":_) = [
   "amount",
   "apply",
   "currency",
@@ -1399,7 +1411,7 @@ nsSubtypeFields (NsSubtype (NsType "customerpayment") "deposit") = NsFields [
   "url"]
 
 -- | Credit Memo > Invoices Applied To
-nsSubtypeFields (NsSubtype (NsType "creditmemo") "apply") = NsFields [
+nsSubtypeFields ("creditmemo":"apply":_) = [
   "amount",
   "apply",
   "applydate",
@@ -1415,7 +1427,7 @@ nsSubtypeFields (NsSubtype (NsType "creditmemo") "apply") = NsFields [
   "url"]
 
 -- | Credit Memo > Line Item
-nsSubtypeFields (NsSubtype (NsType "creditmemo") "item") = NsFields [
+nsSubtypeFields ("creditmemo":"item":_) = [
   "account",
   "amortizationperiod",
   "amortizationtype",
@@ -1465,7 +1477,7 @@ nsSubtypeFields (NsSubtype (NsType "creditmemo") "item") = NsFields [
   "vsoesopgroup"]
 
 -- | Credit Memo > Partners
-nsSubtypeFields (NsSubtype (NsType "creditmemo") "partners") = NsFields [
+nsSubtypeFields ("creditmemo":"partners":_) = [
   "contribution",
   "id",
   "isprimary",
@@ -1474,7 +1486,7 @@ nsSubtypeFields (NsSubtype (NsType "creditmemo") "partners") = NsFields [
   "transaction"]
 
 -- | Credit Memo > Sales Team
-nsSubtypeFields (NsSubtype (NsType "creditmemo") "salesteam") = NsFields [
+nsSubtypeFields ("creditmemo":"salesteam":_) = [
   "contribution",
   "employee",
   "id",
@@ -1484,49 +1496,56 @@ nsSubtypeFields (NsSubtype (NsType "creditmemo") "salesteam") = NsFields [
   "transaction"]
 
 -- | Non-Inventory Item > Price1
-nsSubtypeFields (NsSubtype (NsType "noninventoryitem") "price1") = NsFields [
+nsSubtypeFields ("noninventoryitem":"price1":_) = [
   "currency",
   "discount",
   "discountdisplay",
   "pricelevel"]
 
 -- | Non-Inventory Item > Price2
-nsSubtypeFields (NsSubtype (NsType "noninventoryitem") "price2") = NsFields [
+nsSubtypeFields ("noninventoryitem":"price2":_) = [
   "currency",
   "discount",
   "discountdisplay",
   "pricelevel"]
 
 -- | Non-Inventory Item > Price3
-nsSubtypeFields (NsSubtype (NsType "noninventoryitem") "price3") = NsFields [
+nsSubtypeFields ("noninventoryitem":"price3":_) = [
   "currency",
   "discount",
   "discountdisplay",
   "pricelevel"]
 
 -- | Non-Inventory Item > Price4
-nsSubtypeFields (NsSubtype (NsType "noninventoryitem") "price4") = NsFields [
+nsSubtypeFields ("noninventoryitem":"price4":_) = [
   "currency",
   "discount",
   "discountdisplay",
   "pricelevel"]
 
 -- | Non-Inventory Item > Price5
-nsSubtypeFields (NsSubtype (NsType "noninventoryitem") "price5") = NsFields [
+nsSubtypeFields ("noninventoryitem":"price5":_) = [
+  "currency",
+  "discount",
+  "discountdisplay",
+  "pricelevel"]
+
+-- | Non-Inventory Item > Price6
+nsSubtypeFields ("noninventoryitem":"price6":_) = [
   "currency",
   "discount",
   "discountdisplay",
   "pricelevel"]
 
 -- | Non-Inventory Item > Site Category
-nsSubtypeFields (NsSubtype (NsType "noninventoryitem") "sitecategory") = NsFields [
+nsSubtypeFields ("noninventoryitem":"sitecategory":_) = [
   "category",
   "categorydescription",
   "isdefault",
   "website"]
 
 -- | Sales Order > Item
-nsSubtypeFields (NsSubtype (NsType "salesorder") "item") = NsFields [
+nsSubtypeFields ("salesorder":"item":_) = [
   "altsalesamt",
   "amortizationperiod",
   "amortizationtype",
@@ -1595,7 +1614,7 @@ nsSubtypeFields (NsSubtype (NsType "salesorder") "item") = NsFields [
   "vsoesopgroup"]
 
 -- | Sales Order > Partners
-nsSubtypeFields (NsSubtype (NsType "salesorder") "partners") = NsFields [
+nsSubtypeFields ("salesorder":"partners":_) = [
   "contribution",
   "id",
   "isprimary",
@@ -1604,7 +1623,7 @@ nsSubtypeFields (NsSubtype (NsType "salesorder") "partners") = NsFields [
   "transaction"]
 
 -- | Sales Order > Sales Team
-nsSubtypeFields (NsSubtype (NsType "salesorder") "salesteam") = NsFields [
+nsSubtypeFields ("salesorder":"salesteam":_) = [
   "contribution",
   "employee",
   "id",
@@ -1614,7 +1633,7 @@ nsSubtypeFields (NsSubtype (NsType "salesorder") "salesteam") = NsFields [
   "transaction"]
 
 -- | Sales Order > Shipping Group
-nsSubtypeFields (NsSubtype (NsType "salesorder") "shipgroup") = NsFields [
+nsSubtypeFields ("salesorder":"shipgroup":_) = [
   "destinationaddress",
   "handlingrate",
   "id",
@@ -1625,4 +1644,4 @@ nsSubtypeFields (NsSubtype (NsType "salesorder") "shipgroup") = NsFields [
   "weight"]
 
 -- | Catch-all
-nsSubtypeFields _ = NsFields []
+nsSubtypeFields _ = []

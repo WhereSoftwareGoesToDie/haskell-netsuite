@@ -103,7 +103,11 @@ restletExecute' s cfg (_hostname, _port, _path) = bracket est teardown process
             setHeader "User-Agent" "NsRestlet"
         is <- Streams.fromByteString (bsPackedW8s s)
         _ <- sendRequest c q (inputStreamBody is)
-        catch (RestletOk . (\s -> [s]) <$> (receiveResponse c concatHandler')) (return . RestletErrorResp)
+        catch (RestletOk . (\s -> [s]) <$> (receiveResponse c concatHandler')) debugErr
+
+    debugErr x = do
+        putStrLn $ show x
+        return $ RestletErrorResp x
     
     -- | Establish HTTP or HTTPS connection.
     establish scheme h p =
