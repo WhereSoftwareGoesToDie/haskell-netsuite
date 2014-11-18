@@ -8,30 +8,30 @@
 {-# LANGUAGE RecordWildCards    #-}
 
 module Netsuite.Types.Data (
-  NsAction (..),
-  NsRestletCode (..),
-  NsData (..),
-  NsSublistData (..),
-  NsFilters,
-  NsFilter (..),
-  NsSearchOp (..),
-  NsSearchCols,
-  NsSearchCol,
-  toSearchCols,
+    NsAction (..),
+    NsRestletCode (..),
+    NsData (..),
+    NsSublistData (..),
+    NsFilters,
+    NsFilter (..),
+    NsSearchOp (..),
+    NsSearchCols,
+    NsSearchCol,
+    toSearchCols,
 
-  IsNsType,
-  IsNsSubtype,
-  IsNsId,
-  IsNsDataId,
-  toNsId,
-  toNsDataId,
-  toNsType,
-  toNsSubtype,
+    IsNsType,
+    IsNsSubtype,
+    IsNsId,
+    IsNsDataId,
+    toNsId,
+    toNsDataId,
+    toNsType,
+    toNsSubtype,
 
-  testNsDataForId,
+    testNsDataForId,
 
-  newNsData,
-  typeFields
+    newNsData,
+    typeFields
 ) where
 
 import qualified Data.ByteString as BS
@@ -130,169 +130,158 @@ instance ToJSON NsSublistData where
 --------------------------------------------------------------------------------
 -- | Types of Netsuite actions to execute
 data NsAction = NsActRetrieve {
-    nsarCode       :: NsRestletCode,
-    nsarType       :: NsType,
-    nsarId         :: NsDataId,
-    nsarFields     :: NsFields
-} |
-NsActFetchSublist {
-    nsafsCode      :: NsRestletCode,
-    nsafsSubtype   :: NsSubtype,
-    nsafsParentId  :: NsId,
-    nsafsFields    :: NsFields
-} |
-NsActRawSearch {
-    nsrwsCode      :: NsRestletCode,
-    nsrwsType      :: NsType,
-    nsrwsFilters   :: NsFilters,
-    nsrwsColumns   :: NsSearchCols
-} |
-NsActSearch {
-    nssCode        :: NsRestletCode,
-    nssType        :: NsType,
-    nssFilters     :: NsFilters,
-    nssFields      :: NsFields
-} |
-NsActCreate {
-    nscCode        :: NsRestletCode,
-    nscType        :: NsType,
-    nscData        :: NsData,
-    nscSublists    :: NsSublistData,
-    nscFields      :: NsFields
-} |
-NsActAttach {
-    nsaCode        :: NsRestletCode,
-    nsaTargetType  :: NsType,
-    nsaTargetIds   :: [NsId],
-    nsaAttachType  :: NsType,
-    nsaAttachId    :: NsId,
-    nsaAttributes  :: NsData
-} |
-NsActDetach {
-    nsdCode        :: NsRestletCode,
-    nsdTargetType  :: NsType,
-    nsdTargetIds   :: [NsId],
-    nsdDetachType  :: NsType,
-    nsdDetachId    :: NsId
-} |
-NsActUpdate {
-    nsuCode        :: NsRestletCode,
-    nsuType        :: NsType,
-    nsuData        :: NsData,
-    nsuFields      :: NsFields
-} |
-NsActUpdateSublist {
-    nsusCode       :: NsRestletCode,
-    nsusSubtype    :: NsSubtype,
-    nsusParentId   :: NsId,
-    nsusData       :: [NsData]
-} |
-NsActDelete {
-    nsdlCode       :: NsRestletCode,
-    nsdlType       :: NsType,
-    nsdlId         :: NsDataId
-} |
-NsActInvoicePDF {
-    nsinvCode      :: NsRestletCode,
-    nsinvInvoiceId :: NsId
-} |
-NsActTransform {
-    nstrCode       :: NsRestletCode,
-    nstrSourceType :: NsType,
-    nstrSourceId   :: NsId,
-    nstrTargetType :: NsType,
-    nstrData       :: NsData,
-    nstrFields     :: NsFields
+    nsactCode       :: NsRestletCode,
+    nsactType       :: NsType,
+    nsactDID        :: NsDataId,
+    nsactFields     :: NsFields
+} | NsActFetchSublist {
+    nsactCode       :: NsRestletCode,
+    nsactSubtype    :: NsSubtype,
+    nsactID         :: NsId,
+    nsactFields     :: NsFields
+} | NsActRawSearch {
+    nsactCode       :: NsRestletCode,
+    nsactType       :: NsType,
+    nsactFilters    :: NsFilters,
+    nsactColumns    :: NsSearchCols
+} | NsActSearch {
+    nsactCode       :: NsRestletCode,
+    nsactType       :: NsType,
+    nsactFilters    :: NsFilters,
+    nsactFields     :: NsFields
+} | NsActCreate {
+    nsactCode       :: NsRestletCode,
+    nsactType       :: NsType,
+    nsactData       :: NsData,
+    nsactSubdata    :: NsSublistData,
+    nsactFields     :: NsFields
+} | NsActAttach {
+    nsactCode       :: NsRestletCode,
+    nsactTargetType :: NsType,
+    nsactTargetIds  :: [NsId],
+    nsactFocalType  :: NsType,
+    nsactID         :: NsId,
+    nsactData       :: NsData
+} | NsActDetach {
+    nsactCode       :: NsRestletCode,
+    nsactTargetType :: NsType,
+    nsactTargetIds  :: [NsId],
+    nsactFocalType  :: NsType,
+    nsactID         :: NsId
+} | NsActUpdate {
+    nsactCode       :: NsRestletCode,
+    nsactType       :: NsType,
+    nsactData       :: NsData,
+    nsactFields     :: NsFields
+} | NsActUpdateSublist {
+    nsactCode       :: NsRestletCode,
+    nsactSubtype    :: NsSubtype,
+    nsactID         :: NsId,
+    nsactSublistD   :: [NsData]
+} | NsActDelete {
+    nsactCode       :: NsRestletCode,
+    nsactType       :: NsType,
+    nsactDID        :: NsDataId
+} | NsActInvoicePDF {
+    nsactCode       :: NsRestletCode,
+    nsactID         :: NsId
+} | NsActTransform {
+    nsactCode       :: NsRestletCode,
+    nsactType       :: NsType,
+    nsactID         :: NsId,
+    nsactTargetType :: NsType,
+    nsactData       :: NsData,
+    nsactFields     :: NsFields
 } deriving (Data, Typeable, Show)
 
 instance ToJSON NsAction where
     toJSON (NsActRetrieve {..}) =
-        object [ "code"           .= nsarCode
+        object [ "code"           .= nsactCode
                , "action"         .= String "retrieve"
-               , "type_id"        .= nsarType
-               , "data"           .= nsarId
-               , "fields"         .= nsarFields
+               , "type_id"        .= nsactType
+               , "data"           .= nsactDID
+               , "fields"         .= nsactFields
                  ]
     toJSON (NsActFetchSublist {..}) =
-        object [ "code"           .= nsafsCode
+        object [ "code"           .= nsactCode
                , "action"         .= String "fetch_sublist"
-               , "type_id"        .= (getTypeFromSubtype nsafsSubtype)
-               , "sublist_id"     .= nsafsSubtype
-               , "parent_id"      .= nsafsParentId
-               , "fields"         .= nsafsFields
+               , "type_id"        .= (getTypeFromSubtype nsactSubtype)
+               , "sublist_id"     .= nsactSubtype
+               , "parent_id"      .= nsactID
+               , "fields"         .= nsactFields
                  ]
     toJSON (NsActRawSearch {..}) =
-        object [ "code"           .= nsrwsCode
+        object [ "code"           .= nsactCode
                , "action"         .= String "raw_search"
-               , "type_id"        .= nsrwsType
-               , "data"           .= object ["filters" .= nsrwsFilters, "columns" .= nsrwsColumns]
+               , "type_id"        .= nsactType
+               , "data"           .= object ["filters" .= nsactFilters, "columns" .= nsactColumns]
                  ]
     toJSON (NsActSearch {..}) =
-        object [ "code"           .= nssCode
+        object [ "code"           .= nsactCode
                , "action"         .= String "search"
-               , "type_id"        .= nssType
-               , "data"           .= object ["filters" .= nssFilters]
-               , "fields"         .= nssFields
+               , "type_id"        .= nsactType
+               , "data"           .= object ["filters" .= nsactFilters]
+               , "fields"         .= nsactFields
                  ]
     toJSON (NsActCreate {..}) =
-        object [ "code"           .= nscCode
+        object [ "code"           .= nsactCode
                , "action"         .= String "create"
-               , "type_id"        .= nscType
-               , "data"           .= nscData
-               , "sublists"       .= nscSublists
-               , "fields"         .= nscFields
+               , "type_id"        .= nsactType
+               , "data"           .= nsactData
+               , "sublists"       .= nsactSubdata
+               , "fields"         .= nsactFields
                  ]
     toJSON (NsActAttach {..}) =
-        object [ "code"           .= nsaCode
+        object [ "code"           .= nsactCode
                , "action"         .= String "attach"
-               , "target_type_id" .= nsaTargetType
-               , "type_id"        .= nsaAttachType
-               , "attachee_id"    .= nsaAttachId
-               , "data"           .= (listToJsonArray $ map toJSON nsaTargetIds)
-               , "attributes"     .= nsaAttributes
+               , "target_type_id" .= nsactTargetType
+               , "type_id"        .= nsactFocalType
+               , "attachee_id"    .= nsactID
+               , "data"           .= (listToJsonArray $ map toJSON nsactTargetIds)
+               , "attributes"     .= nsactData
                  ]
     toJSON (NsActDetach {..}) =
-        object [ "code"           .= nsdCode
+        object [ "code"           .= nsactCode
                , "action"         .= String "detach"
-               , "target_type_id" .= nsdTargetType
-               , "type_id"        .= nsdDetachType
-               , "attachee_id"    .= nsdDetachId
-               , "data"           .= (listToJsonArray $ map toJSON nsdTargetIds)
+               , "target_type_id" .= nsactTargetType
+               , "type_id"        .= nsactFocalType
+               , "attachee_id"    .= nsactID
+               , "data"           .= (listToJsonArray $ map toJSON nsactTargetIds)
                 ]
     toJSON (NsActUpdate {..}) =
-        object [ "code"           .= nsuCode
+        object [ "code"           .= nsactCode
                , "action"         .= String "update"
-               , "type_id"        .= nsuType
-               , "data"           .= nsuData
-               , "fields"         .= nsuFields
+               , "type_id"        .= nsactType
+               , "data"           .= nsactData
+               , "fields"         .= nsactFields
                  ]
     toJSON (NsActUpdateSublist {..}) =
-        object [ "code"           .= nsusCode
+        object [ "code"           .= nsactCode
                , "action"         .= String "update_sublist"
-               , "type_id"        .= (getTypeFromSubtype nsusSubtype)
-               , "parent_id"      .= nsusParentId
-               , "sublist_id"     .= nsusSubtype
-               , "data"           .= (listToJsonArray $ map toJSON nsusData)
+               , "type_id"        .= (getTypeFromSubtype nsactSubtype)
+               , "parent_id"      .= nsactID
+               , "sublist_id"     .= nsactSubtype
+               , "data"           .= (listToJsonArray $ map toJSON nsactSublistD)
                  ]
     toJSON (NsActDelete {..}) =
-        object [ "code"           .= nsdlCode
+        object [ "code"           .= nsactCode
                , "action"         .= String "delete"
-               , "type_id"        .= nsdlType
-               , "data"           .= nsdlId
+               , "type_id"        .= nsactType
+               , "data"           .= nsactDID
                  ]
     toJSON (NsActInvoicePDF {..}) =
-        object [ "code"           .= nsinvCode
+        object [ "code"           .= nsactCode
                , "action"         .= String "invoice_pdf"
-               , "invoice_id"     .= nsinvInvoiceId
+               , "invoice_id"     .= nsactID
                  ]
     toJSON (NsActTransform {..}) =
-        object [ "code"           .= nstrCode
+        object [ "code"           .= nsactCode
                , "action"         .= String "transform"
-               , "source_type_id" .= nstrSourceType
-               , "source_id"      .= nstrSourceId
-               , "target_type_id" .= nstrTargetType
-               , "data"           .= nstrData
-               , "fields"         .= nstrFields
+               , "source_type_id" .= nsactType
+               , "source_id"      .= nsactID
+               , "target_type_id" .= nsactTargetType
+               , "data"           .= nsactData
+               , "fields"         .= nsactFields
                  ]
 
 --------------------------------------------------------------------------------

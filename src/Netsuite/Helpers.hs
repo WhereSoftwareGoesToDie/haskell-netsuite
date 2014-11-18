@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Netsuite.Helpers (
-  bsPackedW8s,
-  bs8PackedW8s,
-  bytesToString,
-  listToJsonArray,
-  stringToJsonString
-  ) where
+    bsPackedW8s,
+    bs8PackedW8s,
+    bytesToString,
+    listToJsonArray,
+    stringToJsonString
+) where
 
 import Data.Aeson
 import Data.Aeson.TH
