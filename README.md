@@ -24,13 +24,6 @@ Exposed Restlet Actions
 * invoicePdfNS
 * transformNS
 
-Installation
-------------
-
-Please apply the following pull request against your copy of http-streams:
-
-https://github.com/afcowie/http-streams/pull/67
-
 Usage
 -----
 
@@ -47,7 +40,14 @@ import Netsuite.Connect
 import Netsuite.Restlet.Configuration
 import Netsuite.Types.Data
 
-let testRestletConfig = NsRestletConfig (fromJust $ parseURI "https://rest.netsuite.com/app/site/hosting/restlet.nl?script=21&deploy=5") 123456 1000 "netsuite-user@yourcompany.example.com" "mypassword" Nothing
+let testRestletConfig = NsRestletConfig
+                        (fromJust $ parseURI "https://rest.netsuite.com/app/site/hosting/restlet.nl?script=123&deploy=1") -- URL for your script endpoint
+                        123456 -- NetSuite customer ID
+                        1000 -- NetSuite role ID
+                        "netsuite-user@yourcompany.example.com" -- identifier
+                        "mypassword" -- password
+                        Nothing -- custom user agent
+                        Nothing -- represents custom fields for each entity type
 ```
 
 Note that we've added a couple of Aeson-manipulating functions to help you create your data.  
@@ -56,7 +56,7 @@ For example, `newNsData` is equivalent to `NsData . object`.
 Here's a rough example of fetching a customer info. Run this in ghci:
 
 ```
-retrieveNS testRestletConfig (NsType "customer") (NsDataId 12345) 
+retrieveNS testRestletConfig "customer" 12345
 ```
 
 You should get back an object containing all the fields for that customer.
@@ -64,19 +64,19 @@ You should get back an object containing all the fields for that customer.
 A similar action is used for fetching credit cards, address books and so on:
 
 ```
-fetchSublistNS testRestletConfig (NsSubtype (NsType "customer") "creditcards") (NsId 12345)
+fetchSublistNS testRestletConfig ("customer","creditcards") 12345
 ```
 
 A raw search:
 
 ```
-rawSearchNS testRestletConfig (NsType "customer") [(NsFilter "lastmodifieddate" Nothing OnOrAfter (Just "daysAgo1") Nothing)] (toSearchCols [["externalid"], ["entityid"]])
+rawSearchNS testRestletConfig "customer" [(NsFilter "lastmodifieddate" Nothing OnOrAfter (Just "daysAgo1") Nothing)] (toSearchCols [["externalid"], ["entityid"]])
 ```
 
 And a simple search:
 
 ```
-searchNS testRestletConfig (NsType "customer") [(NsFilter "lastmodifieddate" Nothing OnOrAfter (Just "daysAgo1") Nothing)]
+searchNS testRestletConfig "customer" [(NsFilter "lastmodifieddate" Nothing OnOrAfter (Just "daysAgo1") Nothing)]
 ```
 
 Creating a new contact:
@@ -84,49 +84,49 @@ Creating a new contact:
 ```
 let d = newNsData ["firstname" .= "Jane", "lastname" .= "Doe", "email" .= "jane.doe@example.com"]
 let subd = NsSublistData [("addressbook", [newNsData ["addr1" .= "Unit 1", "addr2" .= "123 Sesame Street", "city" .= "Sydney", "state" .= "NSW", "zip" .= "2000", "country" .= "AU"]])]
-createNS testRestletConfig (NsType "contact") d subd
+createNS testRestletConfig "contact" d subd
 ```
 
 Updating an existing contact (123456):
 
 ```
-updateNS testRestletConfig (NsType "contact") (newNsData ["id" .= "123456", "firstname" .= "Wendy", "lastname" .= "Darling"])
+updateNS testRestletConfig "contact" (newNsData ["id" .= "123456", "firstname" .= "Wendy", "lastname" .= "Darling"])
 ```
 
 Updating an existing contact's address book sublist:
 
 ```
-updateSublistNS testRestletConfig (NsSubtype (NsType "contact") "addressbook") (NsId 123456) [newNsData ["addr1" .= "Second Star to the Left", "addr2", "Straight on 'til Morning", "city" .= "Lost Boys' Hideout", "state" .= "Neverland", "zip" .= "12345", "country" .= "GB"]]
+updateSublistNS testRestletConfig ("contact","addressbook") 123456 [newNsData ["addr1" .= "Second Star to the Left", "addr2", "Straight on 'til Morning", "city" .= "Lost Boys' Hideout", "state" .= "Neverland", "zip" .= "12345", "country" .= "GB"]]
 ```
 
 Attaching a contact (123456) to a customer (12345), with a default role:
 
 ```
-attachNS testRestletConfig (NsType "customer") [(NsId 12345)] (NsType "contact") (NsId 123456) (newNsData [])
+attachNS testRestletConfig "customer" [12345] "contact" 123456 (newNsData [])
 ```
 
 Detaching a contact (123456) from a customer (12345):
 
 ```
-detachNS testRestletConfig (NsType "customer") [(NsId 12345)] (NsType "contact") (NsId 123456)
+detachNS testRestletConfig "customer" [12345] "contact" 123456
 ```
 
 Deleting a contact record:
 
 ```
-deleteNS testRestletConfig (NsType "contact") (NsDataId 123456)
+deleteNS testRestletConfig "contact" 123456
 ```
 
 Downloading an invoice PDF:
 
 ```
-invoicePdfNS testRestletConfig (NsId 123456)
+invoicePdfNS testRestletConfig 123456
 ```
 
 Transforming a customer to a sales order:
 
 ```
-transformNS testRestletConfig (NsType "customer") (NsType "salesorder") (NsId 12345) (newNsData [])
+transformNS testRestletConfig "customer" "salesorder" 12345 (newNsData [])
 ```
 
 Netsuite Types
