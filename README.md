@@ -27,28 +27,37 @@ Exposed Restlet Actions
 Usage
 -----
 
-To get started with these examples, open up GHCI and run something like the following, customising NsRestletConfig where appropriate, to get your environment ready.
+### Setup
 
-All the functions below will return Value objects as defined by Data.Aeson.
+To get started with these examples, open up GHCI and run something like the following, customising your configuration where appropriate, to get your environment ready.
+
+Unlike the previous version, your Netsuite Restlet Config is now defined by a tuple of values. See below for a few examples of the constructor.  
+Note that in this case, I've set the Customer ID and Role to be explicitly Int; those values can be anything of class Integral.
 
 ```haskell
 import Data.Aeson
 import Data.HashMap
-import Data.Maybe
-import Network.URI
 import Netsuite.Connect
-import Netsuite.Restlet.Configuration
-import Netsuite.Types.Data
 
-let testCfg = NsRestletConfig
-              (fromJust $ parseURI "https://rest.netsuite.com/app/site/hosting/restlet.nl?script=123&deploy=1") -- URL for your script endpoint
-              123456 -- NetSuite customer ID
-              1000 -- NetSuite role ID
-              "netsuite-user@yourcompany.example.com" -- identifier
-              "mypassword" -- password
-              Nothing -- custom user agent
-              Nothing -- represents custom fields for each entity type
+let endpoint = "https://rest.netsuite.com/app/site/hosting/restlet.nl?script=123&deploy=1" -- URL for your script endpoint
+
+-- The configuration below describes a full NsRestletConfig, with custom user agent and custom fields specified for customer entities.
+let testCfg = (endpoint, -- NetSuite endpoint URL
+               123456 :: Int, -- NetSuite customer ID
+               1000 :: Int, -- NetSuite account role
+               "netsuite-user@yourcompany.example.com", -- NetSuite account ident
+               "mypassword", -- NetSuite account password
+               "My Netsuite Client", -- user agent string
+               fromList $ [["customer"], ["customfield1", "customfield2"]] -- custom fields as a HashMap [String] [String]
+               )
+
+-- The configuration below also describes a full NsRestletConfig, but it uses the default user agent and fields.
+let testCfg2 = (endpoint, 123456 :: Int, 1000 :: Int, "netsuite-user@yourcompany.example.com", "mypassword")
 ```
+
+### Methods
+
+All the functions below will return Value objects as defined by Data.Aeson.
 
 Here's a rough example of fetching a customer info. Run this in ghci:
 
