@@ -25,15 +25,16 @@ module Netsuite.Types.Data (
     IsNsDataId,
     IsNsFilter,
     IsNsSearchCol,
+    IsNsData,
     toNsId,
     toNsDataId,
     toNsType,
     toNsSubtype,
     toNsFilter,
+    toNsData,
 
     testNsDataForId,
 
-    newNsData,
     typeFields
 ) where
 
@@ -107,14 +108,20 @@ instance IsNsDataId Int where
 newtype NsData = NsData Value deriving (Data, Typeable, Show)
 
 instance ToJSON NsData where
-  toJSON (NsData m) = toJSON m
-
-newNsData :: [Pair] -> NsData
-newNsData = NsData . object
+    toJSON (NsData m) = toJSON m
 
 testNsDataForId :: NsData -> Bool
 testNsDataForId (NsData (Object o)) = HMS.member "id" o
 testNsDataForId _                   = False
+
+class IsNsData a where
+    toNsData :: a -> NsData
+
+instance IsNsData [Pair] where
+    toNsData = NsData . object
+
+instance IsNsData Value where
+    toNsData = NsData
 
 --------------------------------------------------------------------------------
 -- | Netsuite Sublist data dictionaries

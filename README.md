@@ -50,9 +50,6 @@ let testCfg = NsRestletConfig
               Nothing -- represents custom fields for each entity type
 ```
 
-Note that we've added a couple of Aeson-manipulating functions to help you create your data.  
-For example, `newNsData` is equivalent to `NsData . object`.
-
 Here's a rough example of fetching a customer info. Run this in ghci:
 
 ```
@@ -82,27 +79,27 @@ searchNS testCfg "customer" [toNsFilter ("lastmodifieddate",OnOrAfter,"daysAgo1"
 Creating a new contact:
 
 ```
-let d = newNsData ["firstname" .= "Jane", "lastname" .= "Doe", "email" .= "jane.doe@example.com"]
-let subd = NsSublistData [("addressbook", [newNsData ["addr1" .= "Unit 1", "addr2" .= "123 Sesame Street", "city" .= "Sydney", "state" .= "NSW", "zip" .= "2000", "country" .= "AU"]])]
+let d = ["firstname" .= "Jane", "lastname" .= "Doe", "email" .= "jane.doe@example.com"]
+let subd = NsSublistData [("addressbook", [["addr1" .= "Unit 1", "addr2" .= "123 Sesame Street", "city" .= "Sydney", "state" .= "NSW", "zip" .= "2000", "country" .= "AU"]])]
 createNS testCfg "contact" d subd
 ```
 
 Updating an existing contact (123456):
 
 ```
-updateNS testCfg "contact" (newNsData ["id" .= "123456", "firstname" .= "Wendy", "lastname" .= "Darling"])
+updateNS testCfg "contact" ["id" .= "123456", "firstname" .= "Wendy", "lastname" .= "Darling"]
 ```
 
 Updating an existing contact's address book sublist:
 
 ```
-updateSublistNS testCfg ("contact","addressbook") 123456 [newNsData ["addr1" .= "Second Star to the Left", "addr2", "Straight on 'til Morning", "city" .= "Lost Boys' Hideout", "state" .= "Neverland", "zip" .= "12345", "country" .= "GB"]]
+updateSublistNS testCfg ("contact","addressbook") 123456 [["addr1" .= "Second Star to the Left", "addr2", "Straight on 'til Morning", "city" .= "Lost Boys' Hideout", "state" .= "Neverland", "zip" .= "12345", "country" .= "GB"]]
 ```
 
 Attaching a contact (123456) to a customer (12345), with a default role:
 
 ```
-attachNS testCfg "customer" [12345] "contact" 123456 (newNsData [])
+attachNS testCfg "customer" [12345] "contact" 123456 []
 ```
 
 Detaching a contact (123456) from a customer (12345):
@@ -126,7 +123,7 @@ invoicePdfNS testCfg 123456
 Transforming a customer to a sales order:
 
 ```
-transformNS testCfg "customer" "salesorder" 12345 (newNsData [])
+transformNS testCfg "customer" "salesorder" 12345 []
 ```
 
 Netsuite Types

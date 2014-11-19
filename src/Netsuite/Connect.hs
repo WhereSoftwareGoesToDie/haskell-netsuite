@@ -14,7 +14,6 @@ module Netsuite.Connect (
     deleteNS,
     invoicePdfNS,
     transformNS,
-    newNsData,
     NsRestletConfig (..),
     NsData (..),
     NsSublistData (..),
@@ -28,6 +27,7 @@ module Netsuite.Connect (
     IsNsId,
     IsNsDataId,
     IsNsFilter,
+    IsNsData,
     toNsFilter
 ) where
 
@@ -103,31 +103,31 @@ searchNS cfg t fil = do
 
 -- | Creates an object in Netsuite.
 createNS
-    :: (IsNsType t)
+    :: (IsNsType t, IsNsData d)
     => NsRestletConfig
     -> t
-    -> NsData
+    -> d
     -> NsSublistData
     -> IO (Either RestletError Value)
 createNS cfg t d sd = do
     code <- restletCode
-    doNS cfg (NsActCreate (NsRestletCode code) (toNsType t) d sd f)
+    doNS cfg (NsActCreate (NsRestletCode code) (toNsType t) (toNsData d) sd f)
   where
     f = typeFields cfg (toNsType t)
 
 -- | Attaches an object to another in Netsuite.
 attachNS
-    :: (IsNsType t, IsNsId a)
+    :: (IsNsType t, IsNsId a, IsNsData d)
     => NsRestletConfig
     -> t
     -> [a]
     -> t
     -> a
-    -> NsData
+    -> d
     -> IO (Either RestletError Value)
 attachNS cfg targetType targetIDs attType attID attrs = do
     code <- restletCode
-    doNS cfg (NsActAttach (NsRestletCode code) (toNsType targetType) (map toNsId targetIDs) (toNsType attType) (toNsId attID) attrs)
+    doNS cfg (NsActAttach (NsRestletCode code) (toNsType targetType) (map toNsId targetIDs) (toNsType attType) (toNsId attID) (toNsData attrs))
 
 -- | Detaches an object from another in Netsuite.
 detachNS
@@ -144,31 +144,32 @@ detachNS cfg targetType targetIDs detType detID = do
 
 -- | Updates an object in Netsuite.
 updateNS
-    :: (IsNsType t)
+    :: (IsNsType t, IsNsData d)
     => NsRestletConfig
     -> t
-    -> NsData
+    -> d
     -> IO (Either RestletError Value)
 updateNS cfg t d = 
-    if testNsDataForId d
+    if testNsDataForId d'
     then do
         code <- restletCode
-        doNS cfg (NsActUpdate (NsRestletCode code) (toNsType t) d f)
+        doNS cfg (NsActUpdate (NsRestletCode code) (toNsType t) d' f)
     else error "Update data does not contain ID."
   where
-    f = typeFields cfg (toNsType t)
+    f  = typeFields cfg (toNsType t)
+    d' = toNsData d
 
 -- | Updates an object's sublist in Netsuite.
 updateSublistNS
-    :: (IsNsSubtype st, IsNsId a)
+    :: (IsNsSubtype st, IsNsId a, IsNsData d)
     => NsRestletConfig
     -> st
     -> a
-    -> [NsData]
+    -> [d]
     -> IO (Either RestletError Value)
 updateSublistNS cfg st i d = do
     code <- restletCode
-    doNS cfg (NsActUpdateSublist (NsRestletCode code) (toNsSubtype st) (toNsId i) d)
+    doNS cfg (NsActUpdateSublist (NsRestletCode code) (toNsSubtype st) (toNsId i) (map toNsData d))
 
 -- | Deletes an object from Netsuite.
 deleteNS
@@ -193,16 +194,16 @@ invoicePdfNS cfg i = do
 
 -- | Transforms a Netsuite record to another type.
 transformNS
-    :: (IsNsType t, IsNsId a)
+    :: (IsNsType t, IsNsId a, IsNsData d)
     => NsRestletConfig
     -> t
     -> a
     -> t
-    -> NsData
+    -> d
     -> IO (Either RestletError Value)
 transformNS cfg st sid tt d = do
     code <- restletCode
-    doNS cfg (NsActTransform (NsRestletCode code) (toNsType st) (toNsId sid) tt' d f)
+    doNS cfg (NsActTransform (NsRestletCode code) (toNsType st) (toNsId sid) tt' (toNsData d) f)
   where
     tt' = toNsType tt
     f   = typeFields cfg tt'
