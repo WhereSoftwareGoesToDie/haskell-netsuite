@@ -21,15 +21,14 @@ module Netsuite.Connect (
     NsFilters,
     NsFilter (..),
     NsSearchOp (..),
-    NsSearchCols,
-    NsSearchCol,
     RestletError(..),
-    toSearchCols,
 
     IsNsType,
     IsNsSubtype,
     IsNsId,
-    IsNsDataId
+    IsNsDataId,
+    IsNsFilter,
+    toNsFilter
 ) where
 
 import Data.Aeson
@@ -79,15 +78,15 @@ fetchSublistNS cfg st i = do
 
 -- | Does a raw search in Netsuite.
 rawSearchNS
-    :: (IsNsType t)
+    :: (IsNsType t, IsNsSearchCol c)
     => NsRestletConfig
     -> t
     -> NsFilters
-    -> NsSearchCols
+    -> [c]
     -> IO (Either RestletError Value)
-rawSearchNS cfg t fil f = do
+rawSearchNS cfg t fil col = do
     code <- restletCode
-    doNS cfg (NsActRawSearch (NsRestletCode code) (toNsType t) fil f)
+    doNS cfg (NsActRawSearch (NsRestletCode code) (toNsType t) fil (toSearchCols col))
 
 -- | Does an object search in Netsuite.
 searchNS

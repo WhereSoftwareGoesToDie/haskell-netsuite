@@ -23,10 +23,13 @@ module Netsuite.Types.Data (
     IsNsSubtype,
     IsNsId,
     IsNsDataId,
+    IsNsFilter,
+    IsNsSearchCol,
     toNsId,
     toNsDataId,
     toNsType,
     toNsSubtype,
+    toNsFilter,
 
     testNsDataForId,
 
@@ -293,11 +296,16 @@ instance ToJSON NsSearchCol where
         base = [stringToJsonString colName]
 
 -- | Converts lists of lists of strings into search columns
-toSearchCols :: [[String]] -> NsSearchCols
-toSearchCols l = Prelude.map toSearchCol l
-  where
-    toSearchCol (n:[]) = NsSearchCol n Nothing
-    toSearchCol (n:j:_) = NsSearchCol n (Just j)
+toSearchCols :: (IsNsSearchCol c) => [c] -> NsSearchCols
+toSearchCols = Prelude.map toNsSearchCol
+
+class IsNsSearchCol a where
+    toNsSearchCol :: a -> NsSearchCol
+
+instance IsNsSearchCol [[Char]] where
+    toNsSearchCol (n:j:_) = NsSearchCol n (Just j)
+    toNsSearchCol (n:_)   = NsSearchCol n Nothing
+    toNsSearchCol _       = error "Not enough items in list to describe NsSearchCol"
 
 --------------------------------------------------------------------------------
 -- | List of search filters
@@ -318,6 +326,24 @@ instance ToJSON NsFilter where
                     toJSON op,
                     maybe Null stringToJsonString value1]
                 v2 x = [stringToJsonString x]
+
+class IsNsFilter a where
+    toNsFilter :: a -> NsFilter
+
+instance IsNsFilter ([Char], NsSearchOp) where
+    toNsFilter (f, op) = NsFilter f Nothing op Nothing Nothing
+
+instance IsNsFilter ([Char], NsSearchOp, [Char]) where
+    toNsFilter (f, op, v) = NsFilter f Nothing op (Just v) Nothing
+
+instance IsNsFilter ([Char], [Char], NsSearchOp, [Char]) where
+    toNsFilter (f, join, op, v) = NsFilter f (Just join) op (Just v) Nothing
+
+instance IsNsFilter ([Char], [Char], NsSearchOp, [Char], [Char]) where
+    toNsFilter (f, join, op, v, v2) = NsFilter f (Just join) op (Just v) (Just v2)
+
+instance IsNsFilter ([Char], Maybe [Char], NsSearchOp, Maybe [Char], Maybe [Char]) where
+    toNsFilter (f, join, op, v, v2) = NsFilter f join op v v2
 
 --------------------------------------------------------------------------------
 -- | All the types of search operators we have
