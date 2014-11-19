@@ -26,12 +26,14 @@ module Netsuite.Types.Data (
     IsNsFilter,
     IsNsSearchCol,
     IsNsData,
+    IsNsSublistData,
     toNsId,
     toNsDataId,
     toNsType,
     toNsSubtype,
     toNsFilter,
     toNsData,
+    toNsSublistData,
 
     testNsDataForId,
 
@@ -129,6 +131,14 @@ newtype NsSublistData = NsSublistData [(String, [NsData])] deriving (Data, Typea
 
 instance ToJSON NsSublistData where
     toJSON (NsSublistData x) = object . map (\(k, v) -> (Text.pack k) .= v) $ x
+
+class IsNsSublistData a where
+    toNsSublistData :: a -> NsSublistData
+
+instance (IsNsData a) => IsNsSublistData [(String, [a])] where
+    toNsSublistData = NsSublistData . Prelude.map x
+      where
+        x (a, b) = (a, Prelude.map toNsData b)
 
 --------------------------------------------------------------------------------
 -- | Types of Netsuite actions to execute

@@ -80,7 +80,7 @@ Creating a new contact:
 
 ```
 let d = ["firstname" .= "Jane", "lastname" .= "Doe", "email" .= "jane.doe@example.com"]
-let subd = NsSublistData [("addressbook", [["addr1" .= "Unit 1", "addr2" .= "123 Sesame Street", "city" .= "Sydney", "state" .= "NSW", "zip" .= "2000", "country" .= "AU"]])]
+let subd = [("addressbook", [["addr1" .= "Unit 1", "addr2" .= "123 Sesame Street", "city" .= "Sydney", "state" .= "NSW", "zip" .= "2000", "country" .= "AU"]])]
 createNS testCfg "contact" d subd
 ```
 

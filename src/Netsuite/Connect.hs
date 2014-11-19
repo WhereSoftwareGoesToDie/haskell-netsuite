@@ -15,8 +15,6 @@ module Netsuite.Connect (
     invoicePdfNS,
     transformNS,
     NsRestletConfig (..),
-    NsData (..),
-    NsSublistData (..),
     NsFilters,
     NsFilter (..),
     NsSearchOp (..),
@@ -28,6 +26,7 @@ module Netsuite.Connect (
     IsNsDataId,
     IsNsFilter,
     IsNsData,
+    IsNsSublistData,
     toNsFilter
 ) where
 
@@ -103,15 +102,15 @@ searchNS cfg t fil = do
 
 -- | Creates an object in Netsuite.
 createNS
-    :: (IsNsType t, IsNsData d)
+    :: (IsNsType t, IsNsData d, IsNsSublistData sd)
     => NsRestletConfig
     -> t
     -> d
-    -> NsSublistData
+    -> sd
     -> IO (Either RestletError Value)
 createNS cfg t d sd = do
     code <- restletCode
-    doNS cfg (NsActCreate (NsRestletCode code) (toNsType t) (toNsData d) sd f)
+    doNS cfg (NsActCreate (NsRestletCode code) (toNsType t) (toNsData d) (toNsSublistData sd) f)
   where
     f = typeFields cfg (toNsType t)
 
