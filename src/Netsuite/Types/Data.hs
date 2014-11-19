@@ -353,8 +353,14 @@ instance IsNsFilter ([Char], NsSearchOp) where
 instance IsNsFilter ([Char], NsSearchOp, [Char]) where
     toNsFilter (f, op, v) = NsFilter f Nothing op (Just v) Nothing
 
+instance IsNsFilter ([Char], [Char], NsSearchOp) where
+    toNsFilter (f, join, op) = NsFilter f (Just join) op Nothing Nothing
+
 instance IsNsFilter ([Char], [Char], NsSearchOp, [Char]) where
     toNsFilter (f, join, op, v) = NsFilter f (Just join) op (Just v) Nothing
+
+instance IsNsFilter ([Char], NsSearchOp, [Char], [Char]) where
+    toNsFilter (f, op, v, v2) = NsFilter f Nothing op (Just v) (Just v2)
 
 instance IsNsFilter ([Char], [Char], NsSearchOp, [Char], [Char]) where
     toNsFilter (f, join, op, v, v2) = NsFilter f (Just join) op (Just v) (Just v2)
