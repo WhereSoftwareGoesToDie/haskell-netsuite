@@ -143,68 +143,68 @@ instance (IsNsData a) => IsNsSublistData [(String, [a])] where
 --------------------------------------------------------------------------------
 -- | Types of Netsuite actions to execute
 data NsAction = NsActRetrieve {
-    nsactCode       :: NsRestletCode,
     nsactType       :: NsType,
     nsactDID        :: NsDataId,
-    nsactFields     :: NsFields
+    nsactFields     :: NsFields,
+    nsactCode       :: NsRestletCode
 } | NsActFetchSublist {
-    nsactCode       :: NsRestletCode,
     nsactSubtype    :: NsSubtype,
     nsactID         :: NsId,
-    nsactFields     :: NsFields
+    nsactFields     :: NsFields,
+    nsactCode       :: NsRestletCode
 } | NsActRawSearch {
-    nsactCode       :: NsRestletCode,
     nsactType       :: NsType,
     nsactFilters    :: NsFilters,
-    nsactColumns    :: NsSearchCols
+    nsactColumns    :: NsSearchCols,
+    nsactCode       :: NsRestletCode
 } | NsActSearch {
-    nsactCode       :: NsRestletCode,
     nsactType       :: NsType,
     nsactFilters    :: NsFilters,
-    nsactFields     :: NsFields
+    nsactFields     :: NsFields,
+    nsactCode       :: NsRestletCode
 } | NsActCreate {
-    nsactCode       :: NsRestletCode,
     nsactType       :: NsType,
     nsactData       :: NsData,
     nsactSubdata    :: NsSublistData,
-    nsactFields     :: NsFields
+    nsactFields     :: NsFields,
+    nsactCode       :: NsRestletCode
 } | NsActAttach {
-    nsactCode       :: NsRestletCode,
     nsactTargetType :: NsType,
     nsactTargetIds  :: [NsId],
     nsactFocalType  :: NsType,
     nsactID         :: NsId,
-    nsactData       :: NsData
+    nsactData       :: NsData,
+    nsactCode       :: NsRestletCode
 } | NsActDetach {
-    nsactCode       :: NsRestletCode,
     nsactTargetType :: NsType,
     nsactTargetIds  :: [NsId],
     nsactFocalType  :: NsType,
-    nsactID         :: NsId
+    nsactID         :: NsId,
+    nsactCode       :: NsRestletCode
 } | NsActUpdate {
-    nsactCode       :: NsRestletCode,
     nsactType       :: NsType,
     nsactData       :: NsData,
-    nsactFields     :: NsFields
+    nsactFields     :: NsFields,
+    nsactCode       :: NsRestletCode
 } | NsActUpdateSublist {
-    nsactCode       :: NsRestletCode,
     nsactSubtype    :: NsSubtype,
     nsactID         :: NsId,
-    nsactSublistD   :: [NsData]
+    nsactSublistD   :: [NsData],
+    nsactCode       :: NsRestletCode
 } | NsActDelete {
-    nsactCode       :: NsRestletCode,
     nsactType       :: NsType,
-    nsactDID        :: NsDataId
+    nsactDID        :: NsDataId,
+    nsactCode       :: NsRestletCode
 } | NsActInvoicePDF {
-    nsactCode       :: NsRestletCode,
-    nsactID         :: NsId
+    nsactID         :: NsId,
+    nsactCode       :: NsRestletCode
 } | NsActTransform {
-    nsactCode       :: NsRestletCode,
     nsactType       :: NsType,
     nsactID         :: NsId,
     nsactTargetType :: NsType,
     nsactData       :: NsData,
-    nsactFields     :: NsFields
+    nsactFields     :: NsFields,
+    nsactCode       :: NsRestletCode
 } deriving (Data, Typeable, Show)
 
 instance ToJSON NsAction where
