@@ -81,7 +81,7 @@ rawSearchNS
     -> NsFilters
     -> [c]
     -> IO (Either RestletError Value)
-rawSearchNS cfg t fil col = doNS (toNsRestletConfig cfg) $ NsActRawSearch (toNsType t) fil (toSearchCols col)
+rawSearchNS cfg t fil col = doNS (toNsRestletConfig cfg) $ NsActRawSearch (toNsType t) fil (map toNsSearchCol col)
 
 -- | Does an object search in Netsuite.
 searchNS

@@ -17,7 +17,7 @@ module Netsuite.Types.Data (
     NsSearchOp (..),
     NsSearchCols,
     NsSearchCol,
-    toSearchCols,
+    toNsSearchCol,
 
     IsNsType,
     IsNsSubtype,
@@ -45,10 +45,8 @@ import Data.Aeson.Types
 import Data.Aeson.TH
 import Data.Char (toLower)
 import Data.Data
-import qualified Data.HashMap as HashMap
 import qualified Data.HashMap.Strict as HMS
 import Data.Maybe
-import Data.Monoid
 import Data.Typeable
 import qualified Data.Text as Text
 
@@ -311,10 +309,6 @@ instance ToJSON NsSearchCol where
         listToJsonArray . maybe base ((++) base . take 1 . repeat . stringToJsonString) $ joinName
       where
         base = [stringToJsonString colName]
-
--- | Converts lists of lists of strings into search columns
-toSearchCols :: (IsNsSearchCol c) => [c] -> NsSearchCols
-toSearchCols = Prelude.map toNsSearchCol
 
 class IsNsSearchCol a where
     toNsSearchCol :: a -> NsSearchCol
