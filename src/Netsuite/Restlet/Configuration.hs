@@ -1,4 +1,4 @@
-{-# LANGUAGE PackageImports    #-}
+{-# LANGUAGE PackageImports #-}
 
 module Netsuite.Restlet.Configuration where
 

@@ -102,7 +102,7 @@ detachNS cfg targetType targetIDs detType detID = do
 
 -- | Updates an object in Netsuite.
 updateNS :: NsRestletConfig -> NsType -> NsData -> IO (Either RestletError Value)
-updateNS cfg t d = 
+updateNS cfg t d =
     if testNsDataForId d
     then do
         code <- restletCode

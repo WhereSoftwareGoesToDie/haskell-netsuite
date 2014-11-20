@@ -22,9 +22,9 @@ import Data.Tuple.Sequence (sequenceT)
 import Data.Word
 import "network-uri" Network.URI
 
+import Network.Http.Client
 import System.IO.Streams (InputStream, OutputStream, stdout)
 import qualified System.IO.Streams as Streams
-import Network.Http.Client
 
 import Control.Exception (Exception, bracket, throw)
 
@@ -104,7 +104,7 @@ restletExecute' s cfg (_hostname, _port, _path) = bracket est teardown process
         is <- Streams.fromByteString (bsPackedW8s s)
         _ <- sendRequest c q (inputStreamBody is)
         catch (RestletOk . (\s -> [s]) <$> (receiveResponse c concatHandler')) (return . RestletErrorResp)
-    
+
     -- | Establish HTTP or HTTPS connection.
     establish scheme h p =
         case scheme of
@@ -131,7 +131,7 @@ restletExecute' s cfg (_hostname, _port, _path) = bracket est teardown process
         plna = BS8.pack "NLAuth "
         sig = BS8.concat . BS8.lines . bs8PackedW8s . pcfg
         pcfg = List.intercalate "," . map (\(k, v) -> concat [k, "=", v]) . nsAuthPairs
-        
+
     nsAuthPairs cfg = [
         ("nlauth_account", show $ restletAccountID cfg),
         ("nlauth_email", restletIdent cfg),

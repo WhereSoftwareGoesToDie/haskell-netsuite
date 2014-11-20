@@ -6,18 +6,18 @@
 
 module Netsuite.Types.Data where
 
+import Data.Aeson
+import Data.Aeson.TH
+import Data.Aeson.Types
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
-import Data.Aeson
-import Data.Aeson.Types
-import Data.Aeson.TH
 import Data.Char (toLower)
 import Data.Data
 import qualified Data.HashMap as HashMap
 import qualified Data.HashMap.Strict as HMS
 import Data.Maybe
-import Data.Typeable
 import qualified Data.Text as Text
+import Data.Typeable
 import qualified Data.Vector as Vector
 import Data.Word
 
@@ -97,67 +97,67 @@ instance ToJSON NsSublistData where
 --------------------------------------------------------------------------------
 -- | Types of Netsuite actions to execute
 data NsAction = NsActRetrieve {
-    nsarCode       :: NsRestletCode,
-    nsarType       :: NsType,
-    nsarId         :: NsDataId,
-    nsarFields     :: NsFields
+    nsarCode   :: NsRestletCode,
+    nsarType   :: NsType,
+    nsarId     :: NsDataId,
+    nsarFields :: NsFields
   } |
   NsActFetchSublist {
-    nsafsCode      :: NsRestletCode,
-    nsafsSubtype   :: NsSubtype,
-    nsafsParentId  :: NsId,
-    nsafsFields    :: NsFields
+    nsafsCode     :: NsRestletCode,
+    nsafsSubtype  :: NsSubtype,
+    nsafsParentId :: NsId,
+    nsafsFields   :: NsFields
   } |
   NsActRawSearch {
-    nsrwsCode      :: NsRestletCode,
-    nsrwsType      :: NsType,
-    nsrwsFilters   :: NsFilters,
-    nsrwsColumns   :: NsSearchCols
+    nsrwsCode    :: NsRestletCode,
+    nsrwsType    :: NsType,
+    nsrwsFilters :: NsFilters,
+    nsrwsColumns :: NsSearchCols
   } |
   NsActSearch {
-    nssCode        :: NsRestletCode,
-    nssType        :: NsType,
-    nssFilters     :: NsFilters,
-    nssFields      :: NsFields
+    nssCode    :: NsRestletCode,
+    nssType    :: NsType,
+    nssFilters :: NsFilters,
+    nssFields  :: NsFields
   } |
   NsActCreate {
-    nscCode        :: NsRestletCode,
-    nscType        :: NsType,
-    nscData        :: NsData,
-    nscSublists    :: NsSublistData,
-    nscFields      :: NsFields
+    nscCode     :: NsRestletCode,
+    nscType     :: NsType,
+    nscData     :: NsData,
+    nscSublists :: NsSublistData,
+    nscFields   :: NsFields
   } |
   NsActAttach {
-    nsaCode        :: NsRestletCode,
-    nsaTargetType  :: NsType,
-    nsaTargetIds   :: [NsId],
-    nsaAttachType  :: NsType,
-    nsaAttachId    :: NsId,
-    nsaAttributes  :: NsData
+    nsaCode       :: NsRestletCode,
+    nsaTargetType :: NsType,
+    nsaTargetIds  :: [NsId],
+    nsaAttachType :: NsType,
+    nsaAttachId   :: NsId,
+    nsaAttributes :: NsData
   } |
   NsActDetach {
-    nsdCode        :: NsRestletCode,
-    nsdTargetType  :: NsType,
-    nsdTargetIds   :: [NsId],
-    nsdDetachType  :: NsType,
-    nsdDetachId    :: NsId
+    nsdCode       :: NsRestletCode,
+    nsdTargetType :: NsType,
+    nsdTargetIds  :: [NsId],
+    nsdDetachType :: NsType,
+    nsdDetachId   :: NsId
   } |
   NsActUpdate {
-    nsuCode        :: NsRestletCode,
-    nsuType        :: NsType,
-    nsuData        :: NsData,
-    nsuFields      :: NsFields
+    nsuCode   :: NsRestletCode,
+    nsuType   :: NsType,
+    nsuData   :: NsData,
+    nsuFields :: NsFields
   } |
   NsActUpdateSublist {
-    nsusCode       :: NsRestletCode,
-    nsusSubtype    :: NsSubtype,
-    nsusParentId   :: NsId,
-    nsusData       :: [NsData]
+    nsusCode     :: NsRestletCode,
+    nsusSubtype  :: NsSubtype,
+    nsusParentId :: NsId,
+    nsusData     :: [NsData]
   } |
   NsActDelete {
-    nsdlCode       :: NsRestletCode,
-    nsdlType       :: NsType,
-    nsdlId         :: NsDataId
+    nsdlCode :: NsRestletCode,
+    nsdlType :: NsType,
+    nsdlId   :: NsDataId
   } |
   NsActInvoicePDF {
     nsinvCode      :: NsRestletCode,
