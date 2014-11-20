@@ -321,7 +321,13 @@ type NsFilters = [NsFilter]
 
 -- | Constructing a search filter
 -- | eg. NsFilter "lastmodifieddate" Nothing OnOrAfter "2014-08-12"
-data NsFilter = NsFilter String (Maybe String) NsSearchOp (Maybe String) (Maybe String) deriving (Data, Typeable, Show)
+data NsFilter = NsFilter {
+    filterField  :: String,
+    filterJoin   :: Maybe String,
+    filterOp     :: NsSearchOp,
+    filterValue  :: Maybe String,
+    filterValue2 :: Maybe String
+} deriving (Data, Typeable, Show)
 
 instance ToJSON NsFilter where
     toJSON = listToJsonArray . buildFilterArr
@@ -335,27 +341,40 @@ instance ToJSON NsFilter where
                     maybe Null stringToJsonString value1]
                 v2 x = [stringToJsonString x]
 
+-- | Specifies whether we have an object of some kind that can be
+-- converted into an NsFilter.
 class IsNsFilter a where
     toNsFilter :: a -> NsFilter
 
+-- | A filter composed of Field Name and Filter Operation only.
+-- Most useful when working with Filter Operation like IsEmpty and IsNotEmpty.
 instance IsNsFilter ([Char], NsSearchOp) where
     toNsFilter (f, op) = NsFilter f Nothing op Nothing Nothing
 
+-- | A filter composed of Field Name, Filter Operation and Filter Value.
+-- Use this when comparing the value of a particular Field to the Filter Value.
 instance IsNsFilter ([Char], NsSearchOp, [Char]) where
     toNsFilter (f, op, v) = NsFilter f Nothing op (Just v) Nothing
 
+-- | A filter composed of Field Name, Field Entity Join, and Filter Operation.
 instance IsNsFilter ([Char], [Char], NsSearchOp) where
     toNsFilter (f, join, op) = NsFilter f (Just join) op Nothing Nothing
 
+-- | A filter composed of Field Name, Field Entity Join, Filter Operation and Filter Value.
 instance IsNsFilter ([Char], [Char], NsSearchOp, [Char]) where
     toNsFilter (f, join, op, v) = NsFilter f (Just join) op (Just v) Nothing
 
+-- | A filter composed of Field Name, Filter Operation, Filter Value and Filter Value 2.
+-- Useful when using Filter Operations like Between, NotBetween, Within, NotWithin, etc.
 instance IsNsFilter ([Char], NsSearchOp, [Char], [Char]) where
     toNsFilter (f, op, v, v2) = NsFilter f Nothing op (Just v) (Just v2)
 
+-- | A filter composed of Field Name, Filter Join, Filter Operation, Filter Value and Filter Value 2.
 instance IsNsFilter ([Char], [Char], NsSearchOp, [Char], [Char]) where
     toNsFilter (f, join, op, v, v2) = NsFilter f (Just join) op (Just v) (Just v2)
 
+-- | A filter composed of all the raw parameters that can compose a NsFilter more or less directly,
+-- with Maybe used to dictate optional parameters.
 instance IsNsFilter ([Char], Maybe [Char], NsSearchOp, Maybe [Char], Maybe [Char]) where
     toNsFilter (f, join, op, v, v2) = NsFilter f join op v v2
 

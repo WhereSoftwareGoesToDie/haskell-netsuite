@@ -22,6 +22,7 @@ library
                      , Netsuite.Restlet
                      , Netsuite.Restlet.Configuration
                      , Netsuite.Restlet.Response
+                     , Netsuite.Restlet.ResponseHandler
                      , Netsuite.Types.Compile
                      , Netsuite.Types.Data
                      , Netsuite.Types.Data.Core
@@ -37,6 +38,7 @@ library
                      , blaze-builder
                      , bytestring
                      , HsOpenSSL
+                     , http-common
                      , network-uri >= 2.6
                      , text
                      , vector

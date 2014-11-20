@@ -28,6 +28,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Netsuite.Helpers
 import Netsuite.Restlet.Configuration
 import Netsuite.Restlet.Response
+import Netsuite.Restlet.ResponseHandler
 
 -- | External restlet execution function, with quick config check.
 restletExecute :: String -> NsRestletConfig -> IO RestletResponse
@@ -92,8 +93,13 @@ restletExecute' s cfg (_hostname, _port, _path) = bracket est teardown process
             setNsAuth cfg
             setHeader "User-Agent" "NsRestlet"
         is <- Streams.fromByteString (bsPackedW8s s)
+        -- putStrLn $ show s
         _ <- sendRequest c q (inputStreamBody is)
-        catch (RestletOk . (\s -> [s]) <$> (receiveResponse c concatHandler')) (return . RestletErrorResp)
+        catch (RestletOk . (\s -> [s]) <$> (receiveResponse c restletResponseHandler)) debugError
+
+    debugError e = do
+        -- putStrLn $ show e
+        return . RestletErrorResp $ e
 
     -- | Establish HTTP or HTTPS connection.
     establish scheme h p =

@@ -1,11 +1,12 @@
-{-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE DeriveGeneric      #-}
-{-# LANGUAGE FlexibleInstances  #-}
-{-# LANGUAGE GADTs              #-}
-{-# LANGUAGE OverloadedStrings  #-}
-{-# LANGUAGE PackageImports     #-}
-{-# LANGUAGE RankNTypes         #-}
-{-# LANGUAGE RecordWildCards    #-}
+{-# LANGUAGE DeriveDataTypeable   #-}
+{-# LANGUAGE DeriveGeneric        #-}
+{-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE GADTs                #-}
+{-# LANGUAGE OverloadedStrings    #-}
+{-# LANGUAGE PackageImports       #-}
+{-# LANGUAGE RankNTypes           #-}
+{-# LANGUAGE RecordWildCards      #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Netsuite.Types.Data.Core (
     NsType (..),
@@ -32,6 +33,7 @@ import qualified Data.HashMap as HashMap
 import qualified Data.HashMap.Strict as HMS
 import Data.Maybe
 import Data.Monoid
+import Data.String (IsString, fromString)
 import qualified Data.Text as Text
 import Data.Typeable
 import qualified Data.Vector as Vector
@@ -93,5 +95,5 @@ instance (IsNsType a) => IsNsSubtype (a, [Char]) where
     toNsSubtype (a, b) = NsSubtype (toNsType a) b
 
 instance IsNsSubtype [[Char]] where
-    toNsSubtype (a:b:_) = NsSubtype (toNsType a) b
+    toNsSubtype (a:b:_) = NsSubtype (NsType a) b
     toNsSubtype _       = error "Not enough arguments in list for NsSubtype"
