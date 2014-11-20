@@ -17,13 +17,16 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     Netsuite.Connect
-                     , Netsuite.Restlet.Configuration
-                     , Netsuite.Types.Data
   other-modules:       Netsuite.Types.Fields
                      , Netsuite.Helpers
                      , Netsuite.Restlet
+                     , Netsuite.Restlet.Configuration
                      , Netsuite.Restlet.Response
                      , Netsuite.Types.Compile
+                     , Netsuite.Types.Data
+                     , Netsuite.Types.Data.Core
+                     , Netsuite.Types.Data.TypeFamily
+                     , Netsuite.Types.Fields.Core
                      , Paths_netsuite
   build-depends:       base >=4.7 && <4.8
                      , io-streams
