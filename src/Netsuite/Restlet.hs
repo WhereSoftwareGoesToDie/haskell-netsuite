@@ -7,32 +7,22 @@ module Netsuite.Restlet (
     RestletResponse
 ) where
 
-import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BS8
-
-import Blaze.ByteString.Builder (Builder)
 
 import Control.Applicative
 import Control.Exception
 import Data.Char
 import qualified Data.List as List
-import Data.Maybe
 import Data.Monoid
 import Data.Tuple.Sequence (sequenceT)
-import Data.Word
 import "network-uri" Network.URI
 
-import System.IO.Streams (InputStream, OutputStream, stdout)
-import qualified System.IO.Streams as Streams
 import Network.Http.Client
-
-import Control.Exception (Exception, bracket, throw)
+import qualified System.IO.Streams as Streams
 
 import OpenSSL (withOpenSSL)
-import OpenSSL.Session (SSLContext)
-import qualified OpenSSL.Session as SSL
 
-import Data.IORef (IORef, newIORef, readIORef, writeIORef)
+import Data.IORef (newIORef, readIORef)
 import System.IO.Unsafe (unsafePerformIO)
 
 import Netsuite.Helpers
@@ -103,11 +93,7 @@ restletExecute' s cfg (_hostname, _port, _path) = bracket est teardown process
             setHeader "User-Agent" "NsRestlet"
         is <- Streams.fromByteString (bsPackedW8s s)
         _ <- sendRequest c q (inputStreamBody is)
-        catch (RestletOk . (\s -> [s]) <$> (receiveResponse c concatHandler')) debugErr
-
-    debugErr x = do
-        putStrLn $ show x
-        return $ RestletErrorResp x
+        catch (RestletOk . (\s -> [s]) <$> (receiveResponse c concatHandler')) (return . RestletErrorResp)
     
     -- | Establish HTTP or HTTPS connection.
     establish scheme h p =
@@ -135,7 +121,7 @@ restletExecute' s cfg (_hostname, _port, _path) = bracket est teardown process
         plna = BS8.pack "NLAuth "
         sig = BS8.concat . BS8.lines . bs8PackedW8s . pcfg
         pcfg = List.intercalate "," . map (\(k, v) -> concat [k, "=", v]) . nsAuthPairs
-        
+
     nsAuthPairs cfg = [
         ("nlauth_account", show $ restletAccountID cfg),
         ("nlauth_email", restletIdent cfg),

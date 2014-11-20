@@ -42,12 +42,9 @@ module Netsuite.Types.Data (
 
 import Data.Aeson
 import Data.Aeson.Types
-import Data.Aeson.TH
 import Data.Char (toLower)
 import Data.Data
 import qualified Data.HashMap.Strict as HMS
-import Data.Maybe
-import Data.Typeable
 import qualified Data.Text as Text
 
 import Netsuite.Helpers

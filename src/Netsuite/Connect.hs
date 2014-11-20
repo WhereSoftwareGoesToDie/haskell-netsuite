@@ -45,8 +45,6 @@ import Netsuite.Types.Compile
 import Netsuite.Types.Data
 import Netsuite.Types.Fields
 
-import Network.Http.Client (HttpClientError)
-
 -- | Retrieves an object from Netsuite.
 retrieveNS
     :: (IsNsRestletConfig cfg, IsNsType t, IsNsDataId a)

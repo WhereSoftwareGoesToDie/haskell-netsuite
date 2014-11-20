@@ -5,7 +5,6 @@ module Netsuite.Types.Compile (responseToAeson) where
 import Data.Aeson
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
-import qualified Data.HashMap as HashMap
 import Data.Monoid
 import qualified Data.Vector as Vector
 
