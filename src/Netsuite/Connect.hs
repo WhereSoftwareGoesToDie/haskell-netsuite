@@ -136,7 +136,7 @@ updateNS
     -> t
     -> d
     -> IO (Either RestletError Value)
-updateNS cfg t d = 
+updateNS cfg t d =
     if testNsDataForId d'
     then doNS cfg' $ NsActUpdate t' d' f
     else error "Update data does not contain ID."

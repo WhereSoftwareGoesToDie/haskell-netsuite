@@ -21,19 +21,19 @@ module Netsuite.Types.Data.Core (
     getTypeFromSubtype
 ) where
 
+import Data.Aeson
+import Data.Aeson.TH
+import Data.Aeson.Types
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
-import Data.Aeson
-import Data.Aeson.Types
-import Data.Aeson.TH
 import Data.Char (toLower)
 import Data.Data
 import qualified Data.HashMap as HashMap
 import qualified Data.HashMap.Strict as HMS
 import Data.Maybe
 import Data.Monoid
-import Data.Typeable
 import qualified Data.Text as Text
+import Data.Typeable
 import qualified Data.Vector as Vector
 import Data.Word
 

@@ -11,4 +11,4 @@ import Data.Typeable
 newtype NsFields = NsFields [String] deriving (Data, Typeable, Show)
 
 instance ToJSON NsFields where
-  	toJSON (NsFields f) = toJSON f
+      toJSON (NsFields f) = toJSON f

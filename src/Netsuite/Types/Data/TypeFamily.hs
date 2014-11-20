@@ -1,14 +1,14 @@
 module Netsuite.Types.Data.TypeFamily (
-	NsTypeFamily,
-	toTypeIdentList,
-	toDefaultFields,
-	typeFields
+    NsTypeFamily,
+    toTypeIdentList,
+    toDefaultFields,
+    typeFields
 ) where
 
-import Prelude hiding (lookup)
 import Data.HashMap
 import Netsuite.Restlet.Configuration
 import Netsuite.Types.Fields.Core
+import Prelude hiding (lookup)
 
 --------------------------------------------------------------------------------
 -- | Type family class

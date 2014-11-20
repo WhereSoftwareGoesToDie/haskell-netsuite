@@ -94,7 +94,7 @@ restletExecute' s cfg (_hostname, _port, _path) = bracket est teardown process
         is <- Streams.fromByteString (bsPackedW8s s)
         _ <- sendRequest c q (inputStreamBody is)
         catch (RestletOk . (\s -> [s]) <$> (receiveResponse c concatHandler')) (return . RestletErrorResp)
-    
+
     -- | Establish HTTP or HTTPS connection.
     establish scheme h p =
         case scheme of
