@@ -2,7 +2,6 @@
 
 module Netsuite.Restlet.Configuration where
 
-import Data.Maybe
 import "network-uri" Network.URI
 
 -- | Configuration for Netsuite Restlet

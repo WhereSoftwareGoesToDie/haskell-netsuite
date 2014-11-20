@@ -21,7 +21,7 @@ data RestletResponse = RestletOk [BS.ByteString]
 
 instance Monoid RestletResponse where
     mappend (RestletOk x) (RestletOk y)        = RestletOk (x ++ y)
-    mappend (RestletOk x) (RestletErrorResp y) = RestletOk x
+    mappend (RestletOk x) (RestletErrorResp _) = RestletOk x
     mappend (RestletErrorResp x) _             = RestletErrorResp x
     mempty  = RestletOk []
 

@@ -7,32 +7,22 @@ module Netsuite.Restlet (
   RestletResponse
   ) where
 
-import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BS8
-
-import Blaze.ByteString.Builder (Builder)
 
 import Control.Applicative
 import Control.Exception
 import Data.Char
 import qualified Data.List as List
-import Data.Maybe
 import Data.Monoid
 import Data.Tuple.Sequence (sequenceT)
-import Data.Word
 import "network-uri" Network.URI
 
 import Network.Http.Client
-import System.IO.Streams (InputStream, OutputStream, stdout)
 import qualified System.IO.Streams as Streams
 
-import Control.Exception (Exception, bracket, throw)
-
 import OpenSSL (withOpenSSL)
-import OpenSSL.Session (SSLContext)
-import qualified OpenSSL.Session as SSL
 
-import Data.IORef (IORef, newIORef, readIORef, writeIORef)
+import Data.IORef (newIORef, readIORef)
 import System.IO.Unsafe (unsafePerformIO)
 
 import Netsuite.Helpers

@@ -9,7 +9,6 @@ module Netsuite.Helpers (
   ) where
 
 import Data.Aeson
-import Data.Aeson.TH
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as Char8
 import qualified Data.ByteString.Char8 as BS8
@@ -18,7 +17,6 @@ import Data.Char
 import qualified Data.Text as Text
 import qualified Data.Vector as Vector
 import Data.Word
-import GHC.Word (Word8)
 
 bsPackedW8s :: String -> BS.ByteString
 bsPackedW8s = BS.pack . BSI.unpackBytes . Char8.pack
