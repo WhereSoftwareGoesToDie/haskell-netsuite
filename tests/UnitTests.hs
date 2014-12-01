@@ -1,10 +1,10 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Main where
 
 import Data.Aeson
-import Data.Text hiding (map)
+import Data.Maybe
+import Data.Text hiding (length, map)
 import Data.Typeable
 import Netsuite.Connect
 import Netsuite.Types.Data
@@ -17,10 +17,10 @@ import Test.Hspec
 suite :: Spec
 suite = do
     describe "Requests" $ do
-        it "can marshal NsAction objects as valid JSON" $ do
-            case map toJSON exampleNsActions of
-                (x :: [Value]) -> pass
-                x              -> error $ (show x) ++ " should be a list of valid JSON objects"
+        it "can marshal all NsAction types as valid JSON" $ do
+            case catMaybes . map (decode . encode) $ exampleNsActions of
+                (x :: [Value]) -> (length x) `shouldBe` (length exampleNsActions)
+                y              -> error $ (show y) ++ " should be a list of valid JSON objects"
 
 -- | Run everything
 main :: IO ()
@@ -33,7 +33,16 @@ pass = return ()
 -- | Example NsActions
 exampleNsActions :: [NsAction]
 exampleNsActions = [
-    NsActRetrieve (NsType "customer") (toNsDataId (12345 :: Int)) (NsFields ["id", "companyname"]) exampleCode,
-    NsActFetchSublist (NsSubtype (NsType "customer") "addressbook") (toNsId (12345 :: Int)) (NsFields ["phone", "email"]) exampleCode]
+    NsActRetrieve type1 (toNsDataId (12345 :: Int)) (NsFields ["id", "companyname"]) exampleCode,
+    NsActFetchSublist subtype1 (toNsId (12345 :: Int)) (NsFields ["phone", "email"]) exampleCode,
+    NsActRawSearch type1 filters1 cols1 exampleCode ]
   where
+    type1 = (toNsType ("customer"))
+    subtype1 = (toNsSubtype ("customer","addressbook"))
+    filters1 = [toNsFilter ("foo", IsEmpty),
+                toNsFilter ("bar", Is, "1"),
+                toNsFilter ("baz", "beep", EqualTo, "1"),
+                toNsFilter ("fing", Contains, "fang", "foom"),
+                toNsFilter ("person", "location", Between, "rock", "hard place")]
+    cols1 = map toNsSearchCol [["foo"], ["bar"], ["baz", "beep"], ["a column"]]
     exampleCode = NsRestletCode $ pack "alert(\"Hello world!\");"
