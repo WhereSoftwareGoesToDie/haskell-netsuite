@@ -12,8 +12,8 @@ import qualified Data.ByteString.Lazy as BSL
 import qualified Data.HashMap.Strict as HM
 import Data.Monoid
 import qualified Data.Text as Text
-import Network.Http.Client
 import Netsuite.Restlet.ResponseHandler
+import Network.Http.Client
 
 -- | Response type
 data RestletResponse = RestletOk [BS.ByteString]
@@ -71,12 +71,12 @@ getErrorMessage v = maybe "" Text.unpack $ getVal v ["error", "message"]
 
 -- | Get item from deep down in object tree
 getVal :: Value -> [String] -> Maybe Text.Text
-getVal (Object v) (key:xs) = case HM.lookup (Text.pack key) v of 
+getVal (Object v) (key:xs) = case HM.lookup (Text.pack key) v of
     Nothing -> Nothing
     Just v' -> case length xs of
         0 -> case v' of
             String x -> Just x
-            y        -> Just . Text.pack . show $ y        
+            y        -> Just . Text.pack . show $ y
         _ -> getVal v' xs
 getVal _ [] = error "Netsuite.Restlet.Response.getVal: Tried to get a key that wasn't there."
 
