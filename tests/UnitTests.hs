@@ -1,26 +1,45 @@
+{-# LANGUAGE PackageImports      #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Main where
 
+import Control.Exception (evaluate)
 import Data.Aeson
 import Data.Maybe
 import Data.Text hiding (length, map)
 import Data.Typeable
 import Netsuite.Connect
+import Netsuite.Restlet.Configuration
 import Netsuite.Types.Data
 import Netsuite.Types.Data.Core
 import Netsuite.Types.Data.TypeFamily
 import Netsuite.Types.Fields.Core
+import "network-uri" Network.URI
+import System.Exit
 import Test.Hspec
 
 -- | Actual test suite
 suite :: Spec
 suite = do
-    describe "Requests" $ do
+    describe "NsAction" $ do
         it "can marshal all NsAction types as valid JSON" $ do
             case catMaybes . map (decode . encode) $ exampleNsActions of
                 (x :: [Value]) -> (length x) `shouldBe` (length exampleNsActions)
                 y              -> error $ (show y) ++ " should be a list of valid JSON objects"
+    describe "NsRestletConfig" $ do
+        it "can create identical NsRestletConfig object from dissimilar origins" $ do
+            let a = ("http://example.com:8080", 12345 :: Int, 1000 :: Int, "foo@example.com", "bar")
+            let b = NsRestletConfig (fromJust . parseURI $ "http://example.com:8080")
+                                    (12345 :: Integer)
+                                    (1000 :: Integer)
+                                    "foo@example.com"
+                                    "bar"
+                                    Nothing
+                                    Nothing
+            (toNsRestletConfig a) `shouldBe` b
+        it "does not accept invalid URLs" $ do
+            let a = ("obviously incorrect ha ha", 12345 :: Int, 1000 :: Int, "foo@example.com", "bar")
+            evaluate (show $ toNsRestletConfig a) `shouldThrow` errorCall "Maybe.fromJust: Nothing"
 
 -- | Run everything
 main :: IO ()

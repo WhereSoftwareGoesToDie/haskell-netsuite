@@ -22,7 +22,7 @@ data NsRestletConfig = NsRestletConfig {
   restletPassword     :: String,
   restletUA           :: Maybe String,
   restletCustomFields :: Maybe (HashMap [String] [String])
-}
+} deriving (Eq)
 
 instance Show NsRestletConfig where
     show (NsRestletConfig {..}) = intercalate ", " [
