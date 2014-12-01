@@ -5,11 +5,9 @@ module Netsuite.Restlet.ResponseHandler (
     restletResponseHandler
 ) where
 
-import qualified Blaze.ByteString.Builder as Builder
 import Control.Exception
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as S
-import Data.Monoid
 import Data.Typeable
 import Network.Http.Client (concatHandler)
 import Network.Http.Internal (pHeaders)
@@ -35,7 +33,7 @@ restletResponseHandler p i = do
         then throw (HttpRestletError s m h b)
         else return b
   where
-    body = concatHandler p i >>= return
+    body = concatHandler p i
     s = getStatusCode p
     m = getStatusMessage p
     h = pHeaders p
@@ -43,4 +41,4 @@ restletResponseHandler p i = do
 instance Exception HttpRestletError
 
 instance Show HttpRestletError where
-    show (HttpRestletError s msg h b) = Prelude.show s ++ " " ++ S.unpack msg ++ " " ++ S.unpack b
+    show (HttpRestletError s msg _ b) = Prelude.show s ++ " " ++ S.unpack msg ++ " " ++ S.unpack b

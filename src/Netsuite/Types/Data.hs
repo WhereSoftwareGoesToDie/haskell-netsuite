@@ -1,9 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-{-# LANGUAGE DeriveGeneric      #-}
 {-# LANGUAGE FlexibleInstances  #-}
 {-# LANGUAGE GADTs              #-}
 {-# LANGUAGE OverloadedStrings  #-}
-{-# LANGUAGE PackageImports     #-}
 {-# LANGUAGE RankNTypes         #-}
 {-# LANGUAGE RecordWildCards    #-}
 
@@ -49,8 +47,6 @@ import qualified Data.Text as Text
 
 import Netsuite.Helpers
 import Netsuite.Types.Data.Core
-import Netsuite.Types.Data.TypeFamily
-import Netsuite.Types.Fields
 import Netsuite.Types.Fields.Core
 
 --------------------------------------------------------------------------------
@@ -125,7 +121,7 @@ instance IsNsData Value where
 newtype NsSublistData = NsSublistData [(String, [NsData])] deriving (Data, Typeable, Show)
 
 instance ToJSON NsSublistData where
-    toJSON (NsSublistData x) = object . map (\(k, v) -> (Text.pack k) .= v) $ x
+    toJSON (NsSublistData x) = object . map (\(k, v) -> Text.pack k .= v) $ x
 
 class IsNsSublistData a where
     toNsSublistData :: a -> NsSublistData
@@ -213,7 +209,7 @@ instance ToJSON NsAction where
     toJSON (NsActFetchSublist {..}) =
         object [ "code"           .= nsactCode
                , "action"         .= String "fetch_sublist"
-               , "type_id"        .= (getTypeFromSubtype nsactSubtype)
+               , "type_id"        .= getTypeFromSubtype nsactSubtype
                , "sublist_id"     .= nsactSubtype
                , "parent_id"      .= nsactID
                , "fields"         .= nsactFields
@@ -245,7 +241,7 @@ instance ToJSON NsAction where
                , "target_type_id" .= nsactTargetType
                , "type_id"        .= nsactFocalType
                , "attachee_id"    .= nsactID
-               , "data"           .= (listToJsonArray $ map toJSON nsactTargetIds)
+               , "data"           .= listToJsonArray (map toJSON nsactTargetIds)
                , "attributes"     .= nsactData
                  ]
     toJSON (NsActDetach {..}) =
@@ -254,7 +250,7 @@ instance ToJSON NsAction where
                , "target_type_id" .= nsactTargetType
                , "type_id"        .= nsactFocalType
                , "attachee_id"    .= nsactID
-               , "data"           .= (listToJsonArray $ map toJSON nsactTargetIds)
+               , "data"           .= listToJsonArray (map toJSON nsactTargetIds)
                 ]
     toJSON (NsActUpdate {..}) =
         object [ "code"           .= nsactCode
@@ -266,10 +262,10 @@ instance ToJSON NsAction where
     toJSON (NsActUpdateSublist {..}) =
         object [ "code"           .= nsactCode
                , "action"         .= String "update_sublist"
-               , "type_id"        .= (getTypeFromSubtype nsactSubtype)
+               , "type_id"        .= getTypeFromSubtype nsactSubtype
                , "parent_id"      .= nsactID
                , "sublist_id"     .= nsactSubtype
-               , "data"           .= (listToJsonArray $ map toJSON nsactSublistD)
+               , "data"           .= listToJsonArray (map toJSON nsactSublistD)
                  ]
     toJSON (NsActDelete {..}) =
         object [ "code"           .= nsactCode
@@ -303,7 +299,7 @@ data NsSearchCol = NsSearchCol String (Maybe String) deriving (Data, Typeable, S
 
 instance ToJSON NsSearchCol where
     toJSON (NsSearchCol colName joinName) =
-        listToJsonArray . maybe base ((++) base . take 1 . repeat . stringToJsonString) $ joinName
+        listToJsonArray . maybe base ((++) base . replicate 1 . stringToJsonString) $ joinName
       where
         base = [stringToJsonString colName]
 
@@ -418,4 +414,4 @@ data NsSearchOp = After                   |
                   deriving (Data, Typeable, Show)
 
 instance ToJSON NsSearchOp where
-    toJSON = String . Text.pack . (Prelude.map toLower) . show
+    toJSON = String . Text.pack . Prelude.map toLower . show

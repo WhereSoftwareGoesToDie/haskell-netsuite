@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE PackageImports    #-}
 
 module Netsuite.Connect (
     retrieveNS,
@@ -32,7 +31,6 @@ module Netsuite.Connect (
 
 import Data.Aeson
 import qualified Data.ByteString.Lazy as BSL
-import qualified Data.Text as Text
 import qualified Data.Text.IO as TextIO
 
 import Paths_netsuite (getDataFileName)
@@ -43,7 +41,6 @@ import Netsuite.Restlet.Configuration
 import Netsuite.Restlet.Response
 import Netsuite.Types.Compile
 import Netsuite.Types.Data
-import Netsuite.Types.Fields
 
 -- | Retrieves an object from Netsuite.
 retrieveNS

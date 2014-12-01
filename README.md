@@ -36,7 +36,7 @@ Note that in this case, I've set the Customer ID and Role to be explicitly Int; 
 
 ```haskell
 import Data.Aeson
-import Data.HashMap
+import Data.Map
 import Netsuite.Connect
 
 let endpoint = "https://rest.netsuite.com/app/site/hosting/restlet.nl?script=123&deploy=1" -- URL for your script endpoint

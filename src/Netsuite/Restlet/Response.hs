@@ -13,7 +13,6 @@ import qualified Data.HashMap.Strict as HM
 import Data.Monoid
 import qualified Data.Text as Text
 import Netsuite.Restlet.ResponseHandler
-import Network.Http.Client
 
 -- | Response type
 data RestletResponse = RestletOk [BS.ByteString]
@@ -37,7 +36,7 @@ data RestletError = NotFound Int String
                   | GibberishError Int String BS.ByteString deriving (Eq, Show)
 
 interpretError :: RestletResponse -> RestletError
-interpretError (RestletErrorResp e) = interpretError' (fst e') (snd e')
+interpretError (RestletErrorResp e) = uncurry interpretError' e'
   where
     e' = httpClientErrorCodeBody e
 interpretError _ = error "We should not be here"
@@ -58,9 +57,9 @@ interpretError' httpCode es = case mightValue of
                 Just "CC_PROCESSOR_ERROR"      -> CCProcessorError httpCode em
                 Nothing                        -> interpretErrorMsg httpCode em es
                 Just x                         ->
-                    case Text.isSuffixOf (Text.pack "_ALREADY_EXISTS") x of
-                        True  -> ResourceConflict httpCode em
-                        False -> interpretErrorMsg httpCode em es
+                    if Text.isSuffixOf (Text.pack "_ALREADY_EXISTS") x
+                        then ResourceConflict httpCode em
+                        else interpretErrorMsg httpCode em es
     Just _ -> GibberishError httpCode "Couldn't extract meaningful error object." es
     where
         mightValue = decode (BSL.fromStrict es) :: Maybe Value

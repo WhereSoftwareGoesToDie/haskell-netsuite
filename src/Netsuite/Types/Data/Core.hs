@@ -1,11 +1,8 @@
 {-# LANGUAGE DeriveDataTypeable   #-}
-{-# LANGUAGE DeriveGeneric        #-}
 {-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE GADTs                #-}
 {-# LANGUAGE OverloadedStrings    #-}
-{-# LANGUAGE PackageImports       #-}
 {-# LANGUAGE RankNTypes           #-}
-{-# LANGUAGE RecordWildCards      #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Netsuite.Types.Data.Core (
@@ -23,27 +20,11 @@ module Netsuite.Types.Data.Core (
 ) where
 
 import Data.Aeson
-import Data.Aeson.TH
-import Data.Aeson.Types
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Lazy as BSL
-import Data.Char (toLower)
 import Data.Data
-import qualified Data.HashMap as HashMap
-import qualified Data.HashMap.Strict as HMS
-import Data.Maybe
-import Data.Monoid
-import Data.String (IsString, fromString)
-import qualified Data.Text as Text
-import Data.Typeable
-import qualified Data.Vector as Vector
-import Data.Word
+import Data.Typeable()
 
-import Netsuite.Helpers
-import Netsuite.Restlet.Configuration
 import Netsuite.Types.Data.TypeFamily
 import Netsuite.Types.Fields
-import Netsuite.Types.Fields.Core
 
 --------------------------------------------------------------------------------
 -- | Netsuite record type
@@ -75,13 +56,13 @@ instance IsNsType [[Char]] where
 data NsSubtype = NsSubtype NsType String deriving (Data, Typeable)
 
 instance Show NsSubtype where
-    show (NsSubtype t s) = (show t) ++ "." ++ s
+    show (NsSubtype t s) = show t ++ "." ++ s
 
 instance ToJSON NsSubtype where
     toJSON (NsSubtype _ s) = toJSON s
 
 instance NsTypeFamily NsSubtype where
-    toTypeIdentList (NsSubtype t s) = (toTypeIdentList t) ++ [s]
+    toTypeIdentList (NsSubtype t s) = toTypeIdentList t ++ [s]
     toDefaultFields = nsSubtypeFields . toTypeIdentList
 
 getTypeFromSubtype :: NsSubtype -> NsType

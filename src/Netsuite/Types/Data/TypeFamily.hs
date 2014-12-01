@@ -5,7 +5,8 @@ module Netsuite.Types.Data.TypeFamily (
     typeFields
 ) where
 
-import Data.HashMap
+import Data.Map
+import Data.Maybe
 import Netsuite.Restlet.Configuration
 import Netsuite.Types.Fields.Core
 import Prelude hiding (lookup)
@@ -19,10 +20,10 @@ class NsTypeFamily a where
 --------------------------------------------------------------------------------
 -- | Get list of NsFields for a particular NsType or NsSubtype
 typeFields :: (NsTypeFamily a) => NsRestletConfig -> a -> NsFields
-typeFields cfg t = NsFields $ (toDefaultFields t) ++ (getCfgFields cfg t)
+typeFields cfg t = NsFields $ toDefaultFields t ++ getCfgFields cfg t
 
 -- | Get type fields plus extra fields from configuration
 getCfgFields :: (NsTypeFamily a) => NsRestletConfig -> a -> [String]
 getCfgFields cfg t = maybe [] cfgFields $ restletCustomFields cfg
   where
-    cfgFields = maybe [] id . lookup (toTypeIdentList t)
+    cfgFields = fromMaybe [] . lookup (toTypeIdentList t)
