@@ -7,8 +7,8 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 import Data.Maybe
 import Data.Monoid
-import qualified Data.Vector as Vector
 import qualified Data.Text as Text
+import qualified Data.Vector as Vector
 
 import Netsuite.Helpers
 import Netsuite.Restlet.Response

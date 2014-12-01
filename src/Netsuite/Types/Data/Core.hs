@@ -21,7 +21,7 @@ module Netsuite.Types.Data.Core (
 
 import Data.Aeson
 import Data.Data
-import Data.Typeable()
+import Data.Typeable ()
 
 import Netsuite.Types.Data.TypeFamily
 import Netsuite.Types.Fields

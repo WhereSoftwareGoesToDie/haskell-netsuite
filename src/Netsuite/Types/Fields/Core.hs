@@ -4,7 +4,7 @@ module Netsuite.Types.Fields.Core where
 
 import Data.Aeson
 import Data.Data
-import Data.Typeable()
+import Data.Typeable ()
 
 --------------------------------------------------------------------------------
 -- | List of Netsuite fields to retrieve

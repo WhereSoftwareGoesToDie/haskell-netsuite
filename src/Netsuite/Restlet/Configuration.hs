@@ -9,8 +9,8 @@ module Netsuite.Restlet.Configuration (
     toNsRestletConfig
 ) where
 
-import Data.Map
 import Data.List
+import Data.Map
 import Data.Maybe
 import "network-uri" Network.URI
 
