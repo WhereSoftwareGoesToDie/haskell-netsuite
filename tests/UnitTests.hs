@@ -82,7 +82,9 @@ exampleNsActions :: [NsAction]
 exampleNsActions = [
     NsActRetrieve type1 (toNsDataId (12345 :: Int)) (NsFields ["id", "companyname"]) exampleCode,
     NsActFetchSublist subtype1 (toNsId (12345 :: Int)) (NsFields ["phone", "email"]) exampleCode,
-    NsActRawSearch type1 filters1 cols1 exampleCode ]
+    NsActRawSearch type1 filters1 cols1 exampleCode,
+    NsActSearch type1 filters1 (NsFields ["id", "companyName"]) exampleCode,
+    NsActCreate type1 data1 subdata1 (NsFields ["id", "companyName"]) exampleCode ]
   where
     type1    = toNsType "customer"
     subtype1 = toNsSubtype ("customer","addressbook")
@@ -92,4 +94,9 @@ exampleNsActions = [
                 toNsFilter ("fing", Contains, "fang", "foom"),
                 toNsFilter ("person", "location", Between, "rock", "hard place")]
     cols1 = map toNsSearchCol [["foo"], ["bar"], ["baz", "beep"], ["a column"]]
+    data1 = toNsData [(pack "foo")         .= (String . pack $ "bar"),
+                      (pack "baz")         .= (String . pack $ "frob"),
+                      (pack "companyname") .= (String . pack $ "Sturm und Drang Inc.")]
+    subdata1 = toNsSublistData [("addressbook", [ [(pack "address1") .= (String . pack $ "1 Boog Street"),
+                                                           (pack "city")     .= (String . pack $ "Sydney")]])]
     exampleCode = NsRestletCode $ pack "alert(\"Hello world!\");"
