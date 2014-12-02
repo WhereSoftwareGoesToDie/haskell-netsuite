@@ -4,17 +4,21 @@
 module Main where
 
 import Control.Exception (evaluate)
+import Control.Monad.IO.Class
 import Data.Aeson
+import qualified Data.ByteString.Char8 as C hiding (length, map)
 import Data.Maybe
 import Data.Text hiding (length, map)
 import Data.Typeable
 import Netsuite.Connect
+import Netsuite.Restlet
 import Netsuite.Restlet.Configuration
 import Netsuite.Types.Data
 import Netsuite.Types.Data.Core
 import Netsuite.Types.Data.TypeFamily
 import Netsuite.Types.Fields.Core
 import "network-uri" Network.URI
+import Network.Http.Internal
 import System.Exit
 import Test.Hspec
 
@@ -40,6 +44,30 @@ suite = do
         it "does not accept invalid URLs" $ do
             let a = ("obviously incorrect ha ha", 12345 :: Int, 1000 :: Int, "foo@example.com", "bar")
             evaluate (show $ toNsRestletConfig a) `shouldThrow` errorCall "Maybe.fromJust: Nothing"
+
+    describe "Restlet Requests" $
+        it "creates the expected headers" $ do
+            let (nsid, nsrole, nsident, nspwd) = (12345 :: Int, 1000 :: Int, "foo@example.com", "bar")
+
+            let a = ("http://example.com:8080", nsid, nsrole, nsident, nspwd)
+            let p = "/test"
+            r <- makeRequest (toNsRestletConfig a) p
+            qPath r `shouldBe` C.pack p
+            let hdrs = retrieveHeaders . qHeaders $ r
+            liftIO $ putStrLn $ show hdrs
+            tryBsMatch "Content-Type" "application/json" hdrs
+            tryBsMatch "Accept" "application/json" hdrs
+            tryBsMatch "User-Agent" "NsRestlet" hdrs
+            tryBsMatch "Authorization" (Prelude.concat ["NLAuth nlauth_account=",
+                                                        show nsid,
+                                                        ",nlauth_email=",
+                                                        nsident,
+                                                        ",nlauth_role=",
+                                                        show nsrole,
+                                                        ",nlauth_signature=",
+                                                        nspwd]) hdrs
+          where
+            tryBsMatch a b h = shouldBe (lookup (C.pack a) h) (Just . C.pack $ b)
 
 -- | Run everything
 main :: IO ()

@@ -1,7 +1,8 @@
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE PackageImports    #-}
-{-# LANGUAGE RankNTypes        #-}
-{-# LANGUAGE RecordWildCards   #-}
+{-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE PackageImports       #-}
+{-# LANGUAGE RankNTypes           #-}
+{-# LANGUAGE RecordWildCards      #-}
+{-# LANGUAGE TypeSynonymInstances #-}
 
 module Netsuite.Restlet.Configuration (
     NsRestletConfig (..),
@@ -50,7 +51,7 @@ class IsNsRestletConfig a where
 -- Role ID
 -- User identifier
 -- User password
-instance (Integral a) => IsNsRestletConfig ([Char], a, a, [Char], [Char]) where
+instance (Integral a) => IsNsRestletConfig (String, a, a, String, String) where
     toNsRestletConfig (u, a, r, i, p) = NsRestletConfig (justParseURI u) (toInteger a) (toInteger r) i p Nothing Nothing
 
 -- | Configuration containing:
@@ -60,7 +61,7 @@ instance (Integral a) => IsNsRestletConfig ([Char], a, a, [Char], [Char]) where
 -- User identifier
 -- User password
 -- Custom User Agent
-instance (Integral a) => IsNsRestletConfig ([Char], a, a, [Char], [Char], [Char]) where
+instance (Integral a) => IsNsRestletConfig (String, a, a, String, String, String) where
     toNsRestletConfig (u, a, r, i, p, ua) = NsRestletConfig (justParseURI u) (toInteger a) (toInteger r) i p (Just ua) Nothing
 
 -- | Configuration containing:
@@ -70,7 +71,7 @@ instance (Integral a) => IsNsRestletConfig ([Char], a, a, [Char], [Char], [Char]
 -- User identifier
 -- User password
 -- Mapping of entity types/subtypes to custom fields to retrieve
-instance (Integral a) => IsNsRestletConfig ([Char], a, a, [Char], [Char], Map [[Char]] [[Char]]) where
+instance (Integral a) => IsNsRestletConfig (String, a, a, String, String, Map [String] [String]) where
     toNsRestletConfig (u, a, r, i, p, cf) = NsRestletConfig (justParseURI u) (toInteger a) (toInteger r) i p Nothing (Just cf)
 
 -- | Configuration containing:
@@ -81,7 +82,7 @@ instance (Integral a) => IsNsRestletConfig ([Char], a, a, [Char], [Char], Map [[
 -- User password
 -- Custom User Agent
 -- Mapping of entity types/subtypes to custom fields to retrieve
-instance (Integral a) => IsNsRestletConfig ([Char], a, a, [Char], [Char], [Char], Map [[Char]] [[Char]]) where
+instance (Integral a) => IsNsRestletConfig (String, a, a, String, String, String, Map [String] [String]) where
     toNsRestletConfig (u, a, r, i, p, ua, cf) = NsRestletConfig (justParseURI u) (toInteger a) (toInteger r) i p (Just ua) (Just cf)
 
 justParseURI :: String -> URI

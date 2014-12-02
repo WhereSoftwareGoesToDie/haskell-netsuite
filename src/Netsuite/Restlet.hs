@@ -4,6 +4,7 @@
 module Netsuite.Restlet (
     restletExecute,
     chunkableRestletExecute,
+    makeRequest,
     RestletResponse
 ) where
 
@@ -85,12 +86,7 @@ restletExecute' s cfg (_hostname, _port, _path) = bracket est teardown process
     est = establish (uriScheme $ restletURI cfg) _hostname _port
     teardown = closeConnection
     process c = do
-        q <- buildRequest $ do
-            http POST (bsPackedW8s _path)
-            setContentType "application/json"
-            setAccept "application/json"
-            setNsAuth cfg
-            setHeader "User-Agent" "NsRestlet"
+        q  <- makeRequest cfg _path
         is <- Streams.fromByteString (bsPackedW8s s)
         -- putStrLn $ show s
         _ <- sendRequest c q (inputStreamBody is)
@@ -117,17 +113,22 @@ restletExecute' s cfg (_hostname, _port, _path) = bracket est teardown process
             ctx <- baselineContextSSL
             newIORef ctx
 
-    -- | Set NLAuth auth header to be sent in the HTTP request.
+-- | Construct the HTTP headers to send.
+makeRequest :: NsRestletConfig -> String -> IO Request
+makeRequest c p = buildRequest $ do
+    http POST (bsPackedW8s p)
+    setContentType "application/json"
+    setAccept "application/json"
+    setNsAuth c
+    setHeader "User-Agent" "NsRestlet"
+  where
     setNsAuth = setHeader "Authorization" . nsAuth
 
-    nsAuth = BS8.append plna . sig
-      where
-        plna = BS8.pack "NLAuth "
-        sig = BS8.concat . BS8.lines . bs8PackedW8s . pcfg
-        pcfg = List.intercalate "," . map (\(k, v) -> concat [k, "=", v]) . nsAuthPairs
+    nsAuth = BS8.append (BS8.pack "NLAuth ") . sig
+    sig = BS8.concat . BS8.lines . bs8PackedW8s . pcfg
+    pcfg = List.intercalate "," . map (\(k, v) -> concat [k, "=", v]) . nsAuthPairs
 
-    nsAuthPairs c = [
-        ("nlauth_account", show $ restletAccountID c),
-        ("nlauth_email", restletIdent c),
-        ("nlauth_role", show $ restletRole c),
-        ("nlauth_signature", normalizeEscape $ restletPassword c)]
+    nsAuthPairs c' = [ ("nlauth_account",   show $ restletAccountID c')
+                     , ("nlauth_email",     restletIdent c')
+                     , ("nlauth_role",      show $ restletRole c')
+                     , ("nlauth_signature", normalizeEscape $ restletPassword c')]

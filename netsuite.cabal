@@ -61,11 +61,14 @@ test-suite unit-tests
                      , HsOpenSSL
                      , hspec
                      , hspec-expectations
+                     , http-client
                      , http-common
                      , http-streams >= 0.7.2.2 && < 0.8
+                     , http-types
                      , io-streams
                      , network-uri >= 2.6
                      , text
+                     , transformers
                      , tuple
                      , unordered-containers
                      , vector
