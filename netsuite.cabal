@@ -15,6 +15,10 @@ extra-source-files:  README.md
 data-files:          Support/Restlet.js
 cabal-version:       >=1.10
 
+flag network-uri
+   description: Get Network.URI from the network-uri package
+   default: True
+
 library
   exposed-modules:     Netsuite.Connect
   other-modules:       Netsuite.Types.Fields
@@ -29,6 +33,10 @@ library
                      , Netsuite.Types.Data.TypeFamily
                      , Netsuite.Types.Fields.Core
                      , Paths_netsuite
+  if flag(network-uri)
+    build-depends: network-uri >= 2.6, network >= 2.6
+  else
+    build-depends: network-uri < 2.6, network < 2.6
   build-depends:       base >=4.7 && <4.8
                      , aeson
                      , blaze-builder
@@ -39,7 +47,6 @@ library
                      , http-common
                      , http-streams >= 0.7.2.2 && < 0.8
                      , io-streams
-                     , network-uri >= 2.6
                      , text
                      , tuple
                      , unordered-containers
@@ -52,6 +59,10 @@ test-suite unit-tests
   hs-source-dirs:      tests, src
   main-is:             UnitTests.hs
   default-language:    Haskell2010
+  if flag(network-uri)
+    build-depends: network-uri >= 2.6, network >= 2.6
+  else
+    build-depends: network-uri < 2.6, network < 2.6
   build-depends:       base >=4.7 && <4.8
                      , aeson
                      , blaze-builder
@@ -66,7 +77,6 @@ test-suite unit-tests
                      , http-streams >= 0.7.2.2 && < 0.8
                      , http-types
                      , io-streams
-                     , network-uri >= 2.6
                      , text
                      , transformers
                      , tuple

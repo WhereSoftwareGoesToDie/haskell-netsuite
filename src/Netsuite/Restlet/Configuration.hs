@@ -13,7 +13,7 @@ module Netsuite.Restlet.Configuration (
 import Data.List
 import Data.Map
 import Data.Maybe
-import "network-uri" Network.URI
+import Network.URI
 
 data NsRestletConfig = NsRestletConfig {
   restletURI          :: URI,

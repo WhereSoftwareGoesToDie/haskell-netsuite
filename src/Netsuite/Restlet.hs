@@ -16,7 +16,7 @@ import Data.Char
 import qualified Data.List as List
 import Data.Monoid
 import Data.Tuple.Sequence (sequenceT)
-import "network-uri" Network.URI
+import Network.URI
 
 import Network.Http.Client
 import qualified System.IO.Streams as Streams
