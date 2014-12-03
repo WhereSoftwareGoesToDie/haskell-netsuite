@@ -17,7 +17,7 @@ import Netsuite.Types.Data
 import Netsuite.Types.Data.Core
 import Netsuite.Types.Data.TypeFamily
 import Netsuite.Types.Fields.Core
-import "network-uri" Network.URI
+import Network.URI
 import Network.Http.Internal
 import System.Exit
 import Test.Hspec
