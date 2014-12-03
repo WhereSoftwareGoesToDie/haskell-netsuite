@@ -108,7 +108,7 @@ exampleNsActions = [
     data2 = toNsData [(pack "id")  .= (String . pack $ "1234"),
                       (pack "foo") .= (String . pack $ "baz")]
     subdata1 = toNsSublistData [("addressbook", [ [(pack "address1") .= (String . pack $ "1 Boog Street"),
-                                                   (pack "city")     .= (String . pack $ "Sydney")]])]
+                                                   (pack "city")     .= (String . pack $ "Sydney")] ] )]
     multiId = map toNsId [1 :: Int, 2 :: Int, 3 :: Int]
     fields1 = NsFields ["id", "companyname"]
     fields2 = NsFields ["phone", "email"]
