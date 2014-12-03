@@ -80,13 +80,21 @@ pass = return ()
 -- | Example NsActions
 exampleNsActions :: [NsAction]
 exampleNsActions = [
-    NsActRetrieve type1 (toNsDataId (12345 :: Int)) (NsFields ["id", "companyname"]) exampleCode,
-    NsActFetchSublist subtype1 (toNsId (12345 :: Int)) (NsFields ["phone", "email"]) exampleCode,
+    NsActRetrieve type1 (toNsDataId (12345 :: Int)) fields1 exampleCode,
+    NsActFetchSublist subtype1 (toNsId (12345 :: Int)) fields2 exampleCode,
     NsActRawSearch type1 filters1 cols1 exampleCode,
-    NsActSearch type1 filters1 (NsFields ["id", "companyName"]) exampleCode,
-    NsActCreate type1 data1 subdata1 (NsFields ["id", "companyName"]) exampleCode ]
+    NsActSearch type1 filters1 fields1 exampleCode,
+    NsActCreate type1 data1 subdata1 fields1 exampleCode,
+    NsActAttach type1 multiId type2 (toNsId (4 :: Int)) data1 exampleCode,
+    NsActDetach type1 multiId type2 (toNsId (4 :: Int)) exampleCode,
+    NsActUpdate type1 data2 fields1 exampleCode,
+    NsActUpdateSublist subtype1 (toNsId (12334 :: Int)) [data1, data2] exampleCode,
+    NsActDelete type1 (toNsDataId (12356 :: Int)) exampleCode,
+    NsActInvoicePDF (toNsId (9999 :: Int)) exampleCode,
+    NsActTransform type1 (toNsId (12345 :: Int)) type2 data1 fields2 exampleCode ]
   where
     type1    = toNsType "customer"
+    type2    = toNsType "contact"
     subtype1 = toNsSubtype ("customer","addressbook")
     filters1 = [toNsFilter ("foo", IsEmpty),
                 toNsFilter ("bar", Is, "1"),
@@ -97,6 +105,11 @@ exampleNsActions = [
     data1 = toNsData [(pack "foo")         .= (String . pack $ "bar"),
                       (pack "baz")         .= (String . pack $ "frob"),
                       (pack "companyname") .= (String . pack $ "Sturm und Drang Inc.")]
+    data2 = toNsData [(pack "id")  .= (String . pack $ "1234"),
+                      (pack "foo") .= (String . pack $ "baz")]
     subdata1 = toNsSublistData [("addressbook", [ [(pack "address1") .= (String . pack $ "1 Boog Street"),
-                                                           (pack "city")     .= (String . pack $ "Sydney")]])]
+                                                   (pack "city")     .= (String . pack $ "Sydney")]])]
+    multiId = map toNsId [1 :: Int, 2 :: Int, 3 :: Int]
+    fields1 = NsFields ["id", "companyname"]
+    fields2 = NsFields ["phone", "email"]
     exampleCode = NsRestletCode $ pack "alert(\"Hello world!\");"
