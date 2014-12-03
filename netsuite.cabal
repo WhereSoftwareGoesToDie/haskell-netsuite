@@ -15,6 +15,10 @@ extra-source-files:  README.md
 data-files:          Support/Restlet.js
 cabal-version:       >=1.10
 
+flag network-uri
+   description: Get Network.URI from the network-uri package
+   default: True
+
 library
   exposed-modules:     Netsuite.Connect
                      , Netsuite.Restlet.Configuration
@@ -25,6 +29,10 @@ library
                      , Netsuite.Restlet.Response
                      , Netsuite.Types.Compile
                      , Paths_netsuite
+  if flag(network-uri)
+    build-depends: network-uri >= 2.6, network >= 2.6
+  else
+    build-depends: network-uri < 2.6, network < 2.6
   build-depends:       base >=4.7 && <4.8
                      , io-streams
                      , http-streams >= 0.7.2.2 && < 0.8
@@ -34,7 +42,6 @@ library
                      , blaze-builder
                      , bytestring
                      , HsOpenSSL
-                     , network-uri >= 2.6
                      , text
                      , vector
                      , tuple
