@@ -16,13 +16,13 @@ import Data.Maybe
 import Network.URI
 
 data NsRestletConfig = NsRestletConfig {
-  restletURI          :: URI,
-  restletAccountID    :: Integer,
-  restletRole         :: Integer,
-  restletIdent        :: String,
-  restletPassword     :: String,
-  restletUA           :: Maybe String,
-  restletCustomFields :: Maybe (Map [String] [String])
+    restletURI          :: URI,
+    restletAccountID    :: Integer,
+    restletRole         :: Integer,
+    restletIdent        :: String,
+    restletPassword     :: String,
+    restletUA           :: Maybe String,
+    restletCustomFields :: Maybe (Map [String] [String])
 } deriving (Eq)
 
 instance Show NsRestletConfig where

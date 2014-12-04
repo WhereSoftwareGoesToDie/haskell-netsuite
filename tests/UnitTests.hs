@@ -6,13 +6,17 @@ module Main where
 import Control.Exception (evaluate)
 import Control.Monad.IO.Class
 import Data.Aeson
+import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as C hiding (length, map)
+import qualified Data.CaseInsensitive as CI
 import Data.Maybe
-import Data.Text hiding (length, map)
+import Data.Text hiding (head, length, map)
 import Data.Typeable
 import Netsuite.Connect
 import Netsuite.Restlet
 import Netsuite.Restlet.Configuration
+import Netsuite.Restlet.Response
+import Netsuite.Restlet.ResponseHandler
 import Netsuite.Types.Data
 import Netsuite.Types.Data.Core
 import Netsuite.Types.Data.TypeFamily
@@ -66,8 +70,14 @@ suite = do
                                                         show nsrole,
                                                         ",nlauth_signature=",
                                                         nspwd]) hdrs
-          where
-            tryBsMatch a b h = shouldBe (lookup (C.pack a) h) (Just . C.pack $ b)
+
+    describe "Restlet Errors" $
+        it "should parse errors correctly" $
+            interpretError (head exampleRestletErrors) `shouldBe` GibberishError 400 "Unparseable response, expecting JSON." (C.pack "Bad Request")
+
+-- | Tries to match header key values
+tryBsMatch :: String -> String -> [(C.ByteString, C.ByteString)] -> Expectation
+tryBsMatch a b h = shouldBe (lookup (C.pack a) h) (Just . C.pack $ b)
 
 -- | Run everything
 main :: IO ()
@@ -113,3 +123,10 @@ exampleNsActions = [
     fields1 = NsFields ["id", "companyname"]
     fields2 = NsFields ["phone", "email"]
     exampleCode = NsRestletCode $ pack "alert(\"Hello world!\");"
+
+-- | Test Restlet errors
+exampleRestletErrors :: [RestletResponse]
+exampleRestletErrors = map RestletErrorResp [ HttpRestletError 400 txBadRequest hdrs1 txBadRequest ]
+  where
+    txBadRequest = C.pack "Bad Request"
+    hdrs1 = updateHeader emptyHeaders (C.pack "Content-Type") (C.pack "text/plain")
