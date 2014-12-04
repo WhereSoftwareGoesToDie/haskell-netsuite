@@ -71,9 +71,23 @@ suite = do
                                                         ",nlauth_signature=",
                                                         nspwd]) hdrs
 
-    describe "Restlet Errors" $
-        it "should parse errors correctly" $
+    describe "Restlet Errors" $ do
+        it "should parse GibberishError correctly" $
             interpretError (head exampleRestletErrors) `shouldBe` GibberishError 400 "Unparseable response, expecting JSON." (C.pack "Bad Request")
+        it "should parse BeginChunking correctly" $
+            interpretError (exampleRestletErrors !! 1) `shouldBe` BeginChunking 400
+        it "should parse EndChunking correctly" $
+            interpretError (exampleRestletErrors !! 2) `shouldBe` EndChunking 400
+        it "should parse NotFound correctly" $
+            interpretError (exampleRestletErrors !! 3) `shouldBe` NotFound 404 ""
+        it "should parse InvalidSearchFilter correctly" $
+            interpretError (exampleRestletErrors !! 4) `shouldBe` InvalidSearchFilter 400 ""
+        it "should parse CCProcessorError correctly" $
+            interpretError (exampleRestletErrors !! 5) `shouldBe` CCProcessorError 400 ""
+        it "should parse ResourceConflict correctly" $
+            interpretError (exampleRestletErrors !! 6) `shouldBe` ResourceConflict 400 ""
+        it "should parse fall back to UnknownError correctly" $
+            interpretError (exampleRestletErrors !! 7) `shouldBe` UnknownError 400 "IDK_LOL" (C.pack "{\"error\": {\"message\": \"IDK_LOL\"}}")
 
 -- | Tries to match header key values
 tryBsMatch :: String -> String -> [(C.ByteString, C.ByteString)] -> Expectation
@@ -126,7 +140,23 @@ exampleNsActions = [
 
 -- | Test Restlet errors
 exampleRestletErrors :: [RestletResponse]
-exampleRestletErrors = map RestletErrorResp [ HttpRestletError 400 txBadRequest hdrs1 txBadRequest ]
+exampleRestletErrors = map RestletErrorResp [ HttpRestletError 400 txBadRequest hdrs1 txBadRequest
+                                            , HttpRestletError 400 txBadRequest hdrs2 txChunky
+                                            , HttpRestletError 400 txBadRequest hdrs2 txEndChunk
+                                            , HttpRestletError 404 txNotFound hdrs2 txDoesntExist
+                                            , HttpRestletError 400 txBadRequest hdrs2 txInvalidSearch
+                                            , HttpRestletError 400 txBadRequest hdrs2 txCcProcessor
+                                            , HttpRestletError 400 txBadRequest hdrs2 txAlreadyExists
+                                            , HttpRestletError 400 txBadRequest hdrs2 txUnknown ]
   where
     txBadRequest = C.pack "Bad Request"
+    txNotFound = C.pack "Not Found"
+    txChunky = C.pack "{\"error\": {\"message\": \"CHUNKY_MONKEY\"}}"
+    txEndChunk = C.pack "{\"error\": {\"message\": \"NO_MORE_CHUNKS\"}}"
+    txDoesntExist = C.pack "{\"error\": {\"code\": \"RCRD_DOESNT_EXIST\"}}"
+    txInvalidSearch = C.pack "{\"error\": {\"code\": \"SSS_INVALID_SRCH_FILTER\"}}"
+    txCcProcessor = C.pack "{\"error\": {\"code\": \"CC_PROCESSOR_ERROR\"}}"
+    txAlreadyExists = C.pack "{\"error\": {\"code\": \"FOO_ALREADY_EXISTS\"}}"
+    txUnknown = C.pack "{\"error\": {\"message\": \"IDK_LOL\"}}"
     hdrs1 = updateHeader emptyHeaders (C.pack "Content-Type") (C.pack "text/plain")
+    hdrs2 = updateHeader emptyHeaders (C.pack "Content-Type") (C.pack "application/json")
