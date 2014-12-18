@@ -21,9 +21,9 @@ responseToAeson (RestletErrorResp _) = error "Netsuite.Types.Compile.responseToA
 responseToAeson (RestletOk strings)  = unConcatValue . mconcat . map (ConcatValue . singleResponseToAeson) $ strings
   where
     -- | Parse a single object.
-    singleResponseToAeson x = String . Text.pack $
-        fromMaybe ("Could not decode response " ++ bytesToString (BS.unpack x))
-                  (decode . BSL.fromStrict $ x)
+    singleResponseToAeson x = case decode . BSL.fromStrict $ x of
+        Nothing -> error ("Could not decode response " ++ (bytesToString $ BS.unpack x))
+        Just y  -> y
 
 -- | Define a monoid instance so we can get mconcat for free.
 instance Monoid ConcatValue where

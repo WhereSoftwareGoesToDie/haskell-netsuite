@@ -8,6 +8,8 @@ Helps Haskell applications communicate with Netsuite's SuiteScript API.
 
 The Netsuite Connector for Haskell uses restlet code developed as part of Ruby's ns_connector gem. See [the original ns_connector repository](https://github.com/christian-marie/ns_connector) for more information.
 
+Some of the documentation below will refer to the official [SuiteScript Developer & Reference Guide (PDF)](https://system.netsuite.com/core/media/media.nl?id=5732122&c=NLCORP&h=5fca4bf5dd825a28ab41&_xt=.pdf&ck=bq2QAobgAZQN747M&vid=bq2QAqXgAYCNmkUK&cktime=123087&addrcountry=US).
+
 Exposed Restlet Actions
 -----------------------
 
