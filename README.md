@@ -29,6 +29,21 @@ Exposed Restlet Actions
 Usage
 -----
 
+### NetSuite setup
+
+You'll need to install a RESTlet on the NetSuite side that runs the following to evaluate the request we'll send.
+
+```javascript
+function post(request) {
+  func = eval(request.code);
+  return func(request);
+}
+```
+
+Deploy it to NetSuite, ensuring that the POST function is set to 'post'.
+
+Note the 'External URL' when deploying it, that is what you will use as the endpoint in the configuration below.
+
 ### Setup
 
 To get started with these examples, open up GHCI and run something like the following, customising your configuration where appropriate, to get your environment ready.

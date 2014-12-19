@@ -49,15 +49,15 @@ chunkableRestletExecute s cfg = chunkableRestletExecute' mempty False s cfg
             Just bd -> do
                 resp <- restletExecute' s' cfg' bd
                 case resp of
-                    err@(RestletErrorResp _) ->
-                        case interpretError err of
+                    RestletErrorResp {} ->
+                        case interpretError resp of
                             BeginChunking _ -> runAgain mempty -- Begin chunking
                             EndChunking _   -> return lastR -- End chunking
-                            _               -> return err -- Just return the error
-                    ok ->
+                            _               -> return resp -- Just return the error
+                    _                   ->
                         if isChunking
-                            then runAgain (mappend lastR ok) -- Read another chunk
-                            else return ok -- We have enough already
+                            then runAgain (mappend lastR resp) -- Read another chunk
+                            else return resp -- We have enough already
             Nothing -> error "Configuration not valid"
     runAgain newResp = chunkableRestletExecute' newResp True s cfg
 
