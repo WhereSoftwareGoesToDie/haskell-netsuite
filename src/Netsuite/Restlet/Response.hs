@@ -48,18 +48,18 @@ httpClientErrorCodeBody (HttpRestletError code _ _ body) = (code, body)
 interpretError' :: Int -> BS.ByteString -> RestletError
 interpretError' http_code es = case mightValue of
     Nothing -> GibberishError http_code "Unparseable response, expecting JSON." es
-    Just jv@(Object _)  ->
+    Just jv@Object{} ->
         let
             em = getErrorMessage jv
             in case getVal jv ["error", "code"] of
                 Just "RCRD_DOESNT_EXIST"       -> NotFound http_code em
                 Just "SSS_INVALID_SRCH_FILTER" -> InvalidSearchFilter http_code em
                 Just "CC_PROCESSOR_ERROR"      -> CCProcessorError http_code em
-                Nothing                        -> interpretErrorMsg http_code em es
                 Just x                         ->
                     if Text.isSuffixOf (Text.pack "_ALREADY_EXISTS") x
                         then ResourceConflict http_code em
                         else interpretErrorMsg http_code em es
+                Nothing                        -> interpretErrorMsg http_code em es
     Just _ -> GibberishError http_code "Couldn't extract meaningful error object." es
     where
         mightValue = decode (BSL.fromStrict es) :: Maybe Value

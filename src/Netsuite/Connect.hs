@@ -234,8 +234,8 @@ runAction runner cfg act = do
     let actJSON = reqJSON . act . NsRestletCode $ code
     result <- runner actJSON cfg
     return $ case result of
-        RestletErrorResp {} -> Left $ interpretError result
-        _                   -> Right $ responseToAeson result
+        RestletErrorResp{} -> Left $ interpretError result
+        _                  -> Right $ responseToAeson result
   where
     reqJSON = bytesToString . BSL.unpack . encode
     restletCode = getDataFileName "Support/Restlet.js" >>= TextIO.readFile

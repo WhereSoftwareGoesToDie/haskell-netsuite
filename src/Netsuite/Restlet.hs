@@ -49,12 +49,12 @@ chunkableRestletExecute s cfg = chunkableRestletExecute' mempty False s cfg
             Just bd -> do
                 resp <- restletExecute' s' cfg' bd
                 case resp of
-                    RestletErrorResp {} ->
+                    RestletErrorResp{} ->
                         case interpretError resp of
-                            BeginChunking _ -> runAgain mempty -- Begin chunking
-                            EndChunking _   -> return lastR -- End chunking
+                            BeginChunking{} -> runAgain mempty -- Begin chunking
+                            EndChunking{}   -> return lastR -- End chunking
                             _               -> return resp -- Just return the error
-                    _                   ->
+                    _                  ->
                         if isChunking
                             then runAgain (mappend lastR resp) -- Read another chunk
                             else return resp -- We have enough already
