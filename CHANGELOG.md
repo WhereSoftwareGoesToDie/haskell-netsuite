@@ -2,6 +2,11 @@
 
 ## v0
 
+### v0.4.0.0
+
+* Breaking changes in how request data types and restlet configuration are defined, to allow requests to be written more succintly
+* Supports custom column definitions in configuration
+
 ### v0.3.0.0
 
 * searchNS and rawSearchNS now support ISO-8601 datestamps for certain search columns.  

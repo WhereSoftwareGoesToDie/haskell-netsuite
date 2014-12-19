@@ -5,7 +5,9 @@ module Netsuite.Types.Compile (responseToAeson) where
 import Data.Aeson
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
+import Data.Maybe
 import Data.Monoid
+import qualified Data.Text as Text
 import qualified Data.Vector as Vector
 
 import Netsuite.Helpers
@@ -19,11 +21,9 @@ responseToAeson (RestletErrorResp _) = error "Netsuite.Types.Compile.responseToA
 responseToAeson (RestletOk strings)  = unConcatValue . mconcat . map (ConcatValue . singleResponseToAeson) $ strings
   where
     -- | Parse a single object.
-    singleResponseToAeson x =
-      case maybeVal x of
+    singleResponseToAeson x = case decode . BSL.fromStrict $ x of
         Nothing -> error ("Could not decode response " ++ (bytesToString $ BS.unpack x))
         Just y  -> y
-    maybeVal = decode . BSL.fromStrict
 
 -- | Define a monoid instance so we can get mconcat for free.
 instance Monoid ConcatValue where
