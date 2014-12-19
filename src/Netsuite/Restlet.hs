@@ -67,11 +67,11 @@ configOK :: NsRestletConfig -> Maybe (String, Integer, String)
 configOK = sequenceT . breakdownURI . restletURI
   where
     -- | Chop up a URI into a tuple of three maybes; hostname, port and path.
-    breakdownURI u = (cfgHost, cfgPort, cfgPath)
+    breakdownURI u = (cfg_host, cfg_port, cfg_path)
       where
-        cfgHost = uriRegName <$> uriAuthority u
-        cfgPort = getPort <$> uriAuthority u
-        cfgPath = Just $ uriPath u ++ uriQuery u ++ uriFragment u
+        cfg_host = uriRegName <$> uriAuthority u
+        cfg_port = getPort <$> uriAuthority u
+        cfg_path = Just $ uriPath u ++ uriQuery u ++ uriFragment u
         getPort au = case filter isDigit $ uriPort au of
             "" ->
                 case uriScheme u of
@@ -96,13 +96,13 @@ restletExecute' s cfg (_hostname, _port, _path) = bracket est teardown process
     -- putStrLn $ show e
 
     -- | Establish HTTP or HTTPS connection.
-    establish rlScheme h p =
-        case rlScheme of
+    establish rl_scheme h p =
+        case rl_scheme of
             "http:"  -> openConnection host port
             "https:" -> withOpenSSL $ do
                 ctx <- readIORef global
                 openConnectionSSL ctx host port
-            _ -> error ("Unknown URI scheme " ++ rlScheme)
+            _ -> error ("Unknown URI scheme " ++ rl_scheme)
       where
         host = bsPackedW8s h
         port = fromInteger p

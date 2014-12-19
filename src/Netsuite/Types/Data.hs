@@ -298,10 +298,10 @@ type NsSearchCols = [NsSearchCol]
 data NsSearchCol = NsSearchCol String (Maybe String) deriving (Data, Typeable, Show)
 
 instance ToJSON NsSearchCol where
-    toJSON (NsSearchCol colName joinName) =
-        listToJsonArray . maybe base ((++) base . replicate 1 . stringToJsonString) $ joinName
+    toJSON (NsSearchCol col_name join_name) =
+        listToJsonArray . maybe base ((++) base . replicate 1 . stringToJsonString) $ join_name
       where
-        base = [stringToJsonString colName]
+        base = [stringToJsonString col_name]
 
 class IsNsSearchCol a where
     toNsSearchCol :: a -> NsSearchCol

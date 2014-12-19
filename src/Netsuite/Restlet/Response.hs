@@ -46,21 +46,21 @@ httpClientErrorCodeBody (HttpRestletError code _ _ body) = (code, body)
 
 -- | Interpret error message as a data type
 interpretError' :: Int -> BS.ByteString -> RestletError
-interpretError' httpCode es = case mightValue of
-    Nothing -> GibberishError httpCode "Unparseable response, expecting JSON." es
+interpretError' http_code es = case mightValue of
+    Nothing -> GibberishError http_code "Unparseable response, expecting JSON." es
     Just jv@(Object _)  ->
         let
             em = getErrorMessage jv
             in case getVal jv ["error", "code"] of
-                Just "RCRD_DOESNT_EXIST"       -> NotFound httpCode em
-                Just "SSS_INVALID_SRCH_FILTER" -> InvalidSearchFilter httpCode em
-                Just "CC_PROCESSOR_ERROR"      -> CCProcessorError httpCode em
-                Nothing                        -> interpretErrorMsg httpCode em es
+                Just "RCRD_DOESNT_EXIST"       -> NotFound http_code em
+                Just "SSS_INVALID_SRCH_FILTER" -> InvalidSearchFilter http_code em
+                Just "CC_PROCESSOR_ERROR"      -> CCProcessorError http_code em
+                Nothing                        -> interpretErrorMsg http_code em es
                 Just x                         ->
                     if Text.isSuffixOf (Text.pack "_ALREADY_EXISTS") x
-                        then ResourceConflict httpCode em
-                        else interpretErrorMsg httpCode em es
-    Just _ -> GibberishError httpCode "Couldn't extract meaningful error object." es
+                        then ResourceConflict http_code em
+                        else interpretErrorMsg http_code em es
+    Just _ -> GibberishError http_code "Couldn't extract meaningful error object." es
     where
         mightValue = decode (BSL.fromStrict es) :: Maybe Value
 
@@ -81,8 +81,8 @@ getVal _ [] = error "Netsuite.Restlet.Response.getVal: Tried to get a key that w
 
 -- | Get special error message meaning
 interpretErrorMsg :: Int -> String -> BS.ByteString -> RestletError
-interpretErrorMsg httpCode msg body =
+interpretErrorMsg http_code msg body =
     case msg of
-        "CHUNKY_MONKEY"  -> BeginChunking httpCode
-        "NO_MORE_CHUNKS" -> EndChunking httpCode
-        y                -> UnknownError httpCode y body
+        "CHUNKY_MONKEY"  -> BeginChunking http_code
+        "NO_MORE_CHUNKS" -> EndChunking http_code
+        y                -> UnknownError http_code y body
