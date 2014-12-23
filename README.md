@@ -1,6 +1,8 @@
 Netsuite Connector for Haskell
 ==============================
 
+[![Build Status](https://travis-ci.org/anchor/haskell-netsuite.svg)](https://travis-ci.org/anchor/haskell-netsuite)
+
 Background
 ----------
 
