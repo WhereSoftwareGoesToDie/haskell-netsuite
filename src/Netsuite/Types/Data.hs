@@ -43,6 +43,7 @@ import Data.Aeson.Types
 import Data.Char (toLower)
 import Data.Data
 import qualified Data.HashMap.Strict as HMS
+import Data.Text (Text)
 import qualified Data.Text as Text
 
 import Netsuite.Helpers
@@ -52,7 +53,7 @@ import Netsuite.Types.Fields.Core
 --------------------------------------------------------------------------------
 -- | Container for Netsuite restlet code
 data NsRestletCode = NsRestletCode {
-    getCode :: Text.Text
+    getCode :: Text
 } deriving (Data, Typeable, Show)
 
 instance ToJSON NsRestletCode where
@@ -118,7 +119,7 @@ instance IsNsData Value where
 
 --------------------------------------------------------------------------------
 -- | Netsuite Sublist data dictionaries
-newtype NsSublistData = NsSublistData [(Text.Text, [NsData])] deriving (Data, Typeable, Show)
+newtype NsSublistData = NsSublistData [(Text, [NsData])] deriving (Data, Typeable, Show)
 
 instance ToJSON NsSublistData where
     toJSON (NsSublistData x) = object . map (\(k, v) -> k .= v) $ x
@@ -126,7 +127,7 @@ instance ToJSON NsSublistData where
 class IsNsSublistData a where
     toNsSublistData :: a -> NsSublistData
 
-instance (IsNsData a) => IsNsSublistData [(Text.Text, [a])] where
+instance (IsNsData a) => IsNsSublistData [(Text, [a])] where
     toNsSublistData = NsSublistData . Prelude.map x
       where
         x (a, b) = (a, Prelude.map toNsData b)
@@ -295,7 +296,7 @@ type NsSearchCols = [NsSearchCol]
 -- | Search column definition
 -- | May be a single field for the current table
 -- | May also reach across table joins
-data NsSearchCol = NsSearchCol Text.Text (Maybe Text.Text) deriving (Data, Typeable, Show)
+data NsSearchCol = NsSearchCol Text (Maybe Text) deriving (Data, Typeable, Show)
 
 instance ToJSON NsSearchCol where
     toJSON (NsSearchCol col_name join_name) =
@@ -306,7 +307,7 @@ instance ToJSON NsSearchCol where
 class IsNsSearchCol a where
     toNsSearchCol :: a -> NsSearchCol
 
-instance IsNsSearchCol [Text.Text] where
+instance IsNsSearchCol [Text] where
     toNsSearchCol (n:j:_) = NsSearchCol n (Just j)
     toNsSearchCol (n:_)   = NsSearchCol n Nothing
     toNsSearchCol _       = error "Not enough items in list to describe NsSearchCol"
@@ -318,11 +319,11 @@ type NsFilters = [NsFilter]
 -- | Constructing a search filter
 -- | eg. NsFilter "lastmodifieddate" Nothing OnOrAfter "2014-08-12"
 data NsFilter = NsFilter {
-    filterField  :: Text.Text,
-    filterJoin   :: Maybe Text.Text,
+    filterField  :: Text,
+    filterJoin   :: Maybe Text,
     filterOp     :: NsSearchOp,
-    filterValue  :: Maybe Text.Text,
-    filterValue2 :: Maybe Text.Text
+    filterValue  :: Maybe Text,
+    filterValue2 :: Maybe Text
 } deriving (Data, Typeable, Show)
 
 instance ToJSON NsFilter where
@@ -344,34 +345,34 @@ class IsNsFilter a where
 
 -- | A filter composed of Field Name and Filter Operation only.
 -- Most useful when working with Filter Operation like IsEmpty and IsNotEmpty.
-instance IsNsFilter (Text.Text, NsSearchOp) where
+instance IsNsFilter (Text, NsSearchOp) where
     toNsFilter (f, op) = NsFilter f Nothing op Nothing Nothing
 
 -- | A filter composed of Field Name, Filter Operation and Filter Value.
 -- Use this when comparing the value of a particular Field to the Filter Value.
-instance IsNsFilter (Text.Text, NsSearchOp, Text.Text) where
+instance IsNsFilter (Text, NsSearchOp, Text) where
     toNsFilter (f, op, v) = NsFilter f Nothing op (Just v) Nothing
 
 -- | A filter composed of Field Name, Field Entity Join, and Filter Operation.
-instance IsNsFilter (Text.Text, Text.Text, NsSearchOp) where
+instance IsNsFilter (Text, Text, NsSearchOp) where
     toNsFilter (f, join, op) = NsFilter f (Just join) op Nothing Nothing
 
 -- | A filter composed of Field Name, Field Entity Join, Filter Operation and Filter Value.
-instance IsNsFilter (Text.Text, Text.Text, NsSearchOp, Text.Text) where
+instance IsNsFilter (Text, Text, NsSearchOp, Text) where
     toNsFilter (f, join, op, v) = NsFilter f (Just join) op (Just v) Nothing
 
 -- | A filter composed of Field Name, Filter Operation, Filter Value and Filter Value 2.
 -- Useful when using Filter Operations like Between, NotBetween, Within, NotWithin, etc.
-instance IsNsFilter (Text.Text, NsSearchOp, Text.Text, Text.Text) where
+instance IsNsFilter (Text, NsSearchOp, Text, Text) where
     toNsFilter (f, op, v, v2) = NsFilter f Nothing op (Just v) (Just v2)
 
 -- | A filter composed of Field Name, Filter Join, Filter Operation, Filter Value and Filter Value 2.
-instance IsNsFilter (Text.Text, Text.Text, NsSearchOp, Text.Text, Text.Text) where
+instance IsNsFilter (Text, Text, NsSearchOp, Text, Text) where
     toNsFilter (f, join, op, v, v2) = NsFilter f (Just join) op (Just v) (Just v2)
 
 -- | A filter composed of all the raw parameters that can compose a NsFilter more or less directly,
 -- with Maybe used to dictate optional parameters.
-instance IsNsFilter (Text.Text, Maybe Text.Text, NsSearchOp, Maybe Text.Text, Maybe Text.Text) where
+instance IsNsFilter (Text, Maybe Text, NsSearchOp, Maybe Text, Maybe Text) where
     toNsFilter (f, join, op, v, v2) = NsFilter f join op v v2
 
 --------------------------------------------------------------------------------

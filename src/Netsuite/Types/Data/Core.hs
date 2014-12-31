@@ -3,6 +3,7 @@
 {-# LANGUAGE GADTs                #-}
 {-# LANGUAGE OverloadedStrings    #-}
 {-# LANGUAGE RankNTypes           #-}
+{-# LANGUAGE RecordWildCards      #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Netsuite.Types.Data.Core (
@@ -29,16 +30,18 @@ import Netsuite.Types.Fields
 
 --------------------------------------------------------------------------------
 -- | Netsuite record type
-newtype NsType = NsType Text deriving (Data, Typeable)
+newtype NsType = NsType {
+    unNSType :: Text
+} deriving (Data, Typeable)
 
 instance Show NsType where
-    show (NsType t) = unpack t
+    show NsType{..} = unpack unNSType
 
 instance ToJSON NsType where
-    toJSON = toJSON . show
+    toJSON = String . unNSType
 
 instance NsTypeFamily NsType where
-    toTypeIdentList (NsType t) = [t]
+    toTypeIdentList NsType{..} = [unNSType]
     toDefaultFields = nsTypeFields . toTypeIdentList
 
 -- | Turn simpler types into NsType
@@ -54,20 +57,23 @@ instance IsNsType [Text] where
 
 --------------------------------------------------------------------------------
 -- | Netsuite record subtype
-data NsSubtype = NsSubtype NsType Text deriving (Data, Typeable)
+data NsSubtype = NsSubtype {
+    unNSSubtypeParent :: NsType,
+    unNSSubtype       :: Text
+} deriving (Data, Typeable)
 
 instance Show NsSubtype where
-    show (NsSubtype t s) = show t ++ "." ++ unpack s
+    show NsSubtype{..} = show unNSSubtypeParent ++ "." ++ unpack unNSSubtype
 
 instance ToJSON NsSubtype where
-    toJSON (NsSubtype _ s) = toJSON . unpack $ s
+    toJSON NsSubtype{..} = String unNSSubtype
 
 instance NsTypeFamily NsSubtype where
-    toTypeIdentList (NsSubtype t s) = toTypeIdentList t ++ [s]
+    toTypeIdentList NsSubtype{..} = toTypeIdentList unNSSubtypeParent ++ [unNSSubtype]
     toDefaultFields = nsSubtypeFields . toTypeIdentList
 
 getTypeFromSubtype :: NsSubtype -> NsType
-getTypeFromSubtype (NsSubtype t _) = t
+getTypeFromSubtype NsSubtype{..} = unNSSubtypeParent
 
 -- | Turn simpler types into NsSubtype
 class IsNsSubtype a where
