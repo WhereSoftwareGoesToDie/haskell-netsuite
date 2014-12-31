@@ -2,6 +2,11 @@
 
 ## v0
 
+### v0.4.1.0
+
+* String types in API converted to Text.
+* Unravelled some redundant type conversion.
+
 ### v0.4.0.0
 
 * Breaking changes in how request data types and restlet configuration are defined, to allow requests to be written more succintly

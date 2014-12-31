@@ -21,6 +21,7 @@ module Netsuite.Types.Data.Core (
 
 import Data.Aeson
 import Data.Data
+import Data.Text
 import Data.Typeable ()
 
 import Netsuite.Types.Data.TypeFamily
@@ -28,13 +29,13 @@ import Netsuite.Types.Fields
 
 --------------------------------------------------------------------------------
 -- | Netsuite record type
-newtype NsType = NsType String deriving (Data, Typeable)
+newtype NsType = NsType Text deriving (Data, Typeable)
 
 instance Show NsType where
-    show (NsType t) = t
+    show (NsType t) = unpack t
 
 instance ToJSON NsType where
-    toJSON (NsType s) = toJSON s
+    toJSON = toJSON . show
 
 instance NsTypeFamily NsType where
     toTypeIdentList (NsType t) = [t]
@@ -44,22 +45,22 @@ instance NsTypeFamily NsType where
 class IsNsType a where
     toNsType :: a -> NsType
 
-instance IsNsType [Char] where
+instance IsNsType Text where
     toNsType = NsType
 
-instance IsNsType [[Char]] where
+instance IsNsType [Text] where
     toNsType (a:_) = NsType a
     toNsType _     = error "Not enough arguments in list for NsType"
 
 --------------------------------------------------------------------------------
 -- | Netsuite record subtype
-data NsSubtype = NsSubtype NsType String deriving (Data, Typeable)
+data NsSubtype = NsSubtype NsType Text deriving (Data, Typeable)
 
 instance Show NsSubtype where
-    show (NsSubtype t s) = show t ++ "." ++ s
+    show (NsSubtype t s) = show t ++ "." ++ unpack s
 
 instance ToJSON NsSubtype where
-    toJSON (NsSubtype _ s) = toJSON s
+    toJSON (NsSubtype _ s) = toJSON . unpack $ s
 
 instance NsTypeFamily NsSubtype where
     toTypeIdentList (NsSubtype t s) = toTypeIdentList t ++ [s]
@@ -72,9 +73,9 @@ getTypeFromSubtype (NsSubtype t _) = t
 class IsNsSubtype a where
     toNsSubtype :: a -> NsSubtype
 
-instance (IsNsType a) => IsNsSubtype (a, [Char]) where
+instance (IsNsType a) => IsNsSubtype (a, Text) where
     toNsSubtype (a, b) = NsSubtype (toNsType a) b
 
-instance IsNsSubtype [[Char]] where
+instance IsNsSubtype [Text] where
     toNsSubtype (a:b:_) = NsSubtype (NsType a) b
     toNsSubtype _       = error "Not enough arguments in list for NsSubtype"
