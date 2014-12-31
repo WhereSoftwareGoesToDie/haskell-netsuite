@@ -30,7 +30,7 @@ library
                      , Netsuite.Types.Compile
                      , Netsuite.Types.Data
                      , Netsuite.Types.Data.Core
-                     , Netsuite.Types.Data.TypeFamily
+                     , Netsuite.Types.Data.TypeClass
                      , Netsuite.Types.Fields.Core
                      , Paths_netsuite
   if flag(network-uri)

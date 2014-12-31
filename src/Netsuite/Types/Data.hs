@@ -119,18 +119,20 @@ instance IsNsData Value where
 
 --------------------------------------------------------------------------------
 -- | Netsuite Sublist data dictionaries
-newtype NsSublistData = NsSublistData [(Text, [NsData])] deriving (Data, Typeable, Show)
+newtype NsSublistData = NsSublistData {
+    unNSSublistData :: [(Text, [NsData])]
+} deriving (Data, Typeable, Show)
 
 instance ToJSON NsSublistData where
-    toJSON (NsSublistData x) = object . map (\(k, v) -> k .= v) $ x
+    toJSON = object . map (\(k,v) -> k .= v) . unNSSublistData
 
 class IsNsSublistData a where
     toNsSublistData :: a -> NsSublistData
 
 instance (IsNsData a) => IsNsSublistData [(Text, [a])] where
-    toNsSublistData = NsSublistData . Prelude.map x
+    toNsSublistData = NsSublistData . map x
       where
-        x (a, b) = (a, Prelude.map toNsData b)
+        x (a, b) = (a, map toNsData b)
 
 --------------------------------------------------------------------------------
 -- | Types of Netsuite actions to execute
@@ -300,9 +302,9 @@ data NsSearchCol = NsSearchCol Text (Maybe Text) deriving (Data, Typeable, Show)
 
 instance ToJSON NsSearchCol where
     toJSON (NsSearchCol col_name join_name) =
-        listToJsonArray . maybe base ((++) base . replicate 1 . String) $ join_name
+        listToJsonArray . maybe [base] (\x -> base : [String x]) $ join_name
       where
-        base = [String col_name]
+        base = String col_name
 
 class IsNsSearchCol a where
     toNsSearchCol :: a -> NsSearchCol
@@ -415,4 +417,4 @@ data NsSearchOp = After                   |
                   deriving (Data, Typeable, Show)
 
 instance ToJSON NsSearchOp where
-    toJSON = String . Text.pack . Prelude.map toLower . show
+    toJSON = String . Text.pack . map toLower . show

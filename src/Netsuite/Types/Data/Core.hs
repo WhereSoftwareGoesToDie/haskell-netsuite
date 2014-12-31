@@ -25,7 +25,7 @@ import Data.Data
 import Data.Text
 import Data.Typeable ()
 
-import Netsuite.Types.Data.TypeFamily
+import Netsuite.Types.Data.TypeClass
 import Netsuite.Types.Fields
 
 --------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ instance Show NsType where
 instance ToJSON NsType where
     toJSON = String . unNSType
 
-instance NsTypeFamily NsType where
+instance NsTypeClass NsType where
     toTypeIdentList NsType{..} = [unNSType]
     toDefaultFields = nsTypeFields . toTypeIdentList
 
@@ -68,7 +68,7 @@ instance Show NsSubtype where
 instance ToJSON NsSubtype where
     toJSON NsSubtype{..} = String unNSSubtype
 
-instance NsTypeFamily NsSubtype where
+instance NsTypeClass NsSubtype where
     toTypeIdentList NsSubtype{..} = toTypeIdentList unNSSubtypeParent ++ [unNSSubtype]
     toDefaultFields = nsSubtypeFields . toTypeIdentList
 

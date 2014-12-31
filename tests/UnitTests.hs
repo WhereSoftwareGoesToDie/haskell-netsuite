@@ -20,7 +20,7 @@ import Netsuite.Restlet.Response
 import Netsuite.Restlet.ResponseHandler
 import Netsuite.Types.Data
 import Netsuite.Types.Data.Core
-import Netsuite.Types.Data.TypeFamily
+import Netsuite.Types.Data.TypeClass
 import Netsuite.Types.Fields.Core
 import Network.URI
 import Network.Http.Internal

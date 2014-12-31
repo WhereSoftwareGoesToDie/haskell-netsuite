@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings    #-}
 
-module Netsuite.Types.Data.TypeFamily (
-    NsTypeFamily,
+module Netsuite.Types.Data.TypeClass (
+    NsTypeClass,
     toTypeIdentList,
     toDefaultFields,
     typeFields
@@ -16,17 +16,17 @@ import Prelude hiding (lookup)
 
 --------------------------------------------------------------------------------
 -- | Type family class
-class NsTypeFamily a where
+class NsTypeClass a where
     toTypeIdentList :: a -> [Text]
     toDefaultFields :: a -> [Text]
 
 --------------------------------------------------------------------------------
 -- | Get list of NsFields for a particular NsType or NsSubtype
-typeFields :: (NsTypeFamily a) => NsRestletConfig -> a -> NsFields
+typeFields :: (NsTypeClass a) => NsRestletConfig -> a -> NsFields
 typeFields cfg t = NsFields $ toDefaultFields t ++ getCfgFields cfg t
 
 -- | Get type fields plus extra fields from configuration
-getCfgFields :: (NsTypeFamily a) => NsRestletConfig -> a -> [Text]
+getCfgFields :: (NsTypeClass a) => NsRestletConfig -> a -> [Text]
 getCfgFields cfg t = maybe [] cfgFields $ restletCustomFields cfg
   where
     cfgFields = fromMaybe [] . lookup (toTypeIdentList t)
