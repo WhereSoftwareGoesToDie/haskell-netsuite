@@ -5,8 +5,10 @@ module Netsuite.Types.Fields (
     nsSubtypeFields,
 ) where
 
+import Data.Text
+
 -- | Lists of fields per Netsuite record type
-nsTypeFields :: [String] -> [String]
+nsTypeFields :: [Text] -> [Text]
 
 -- | Customer
 nsTypeFields ("customer":_) = [
@@ -1082,7 +1084,7 @@ nsTypeFields ("salesorder":_) = [
 nsTypeFields _ = []
 
 -- | Lists of fields per Netsuite record type
-nsSubtypeFields :: [String] -> [String]
+nsSubtypeFields :: [Text] -> [Text]
 
 -- | Customer > Address Book
 nsSubtypeFields ("customer":"addressbook":_) = [

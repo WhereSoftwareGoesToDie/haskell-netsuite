@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE PackageImports      #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
@@ -19,7 +20,7 @@ import Netsuite.Restlet.Response
 import Netsuite.Restlet.ResponseHandler
 import Netsuite.Types.Data
 import Netsuite.Types.Data.Core
-import Netsuite.Types.Data.TypeFamily
+import Netsuite.Types.Data.TypeClass
 import Netsuite.Types.Fields.Core
 import Network.URI
 import Network.Http.Internal
@@ -36,24 +37,38 @@ suite = do
                 y              -> error $ show y ++ " should be a list of valid JSON objects"
     describe "NsRestletConfig" $ do
         it "can create identical NsRestletConfig object from dissimilar origins" $ do
-            let a = ("http://example.com:8080", 12345 :: Int, 1000 :: Int, "foo@example.com", "bar")
+            let ident = pack "foo@example.com"
+            let pass = pack "bar"
+
+            let a = (pack "http://example.com:8080"
+                    , 12345 :: Int
+                    , 1000 :: Int
+                    , ident
+                    , pass)
             let b = NsRestletConfig (fromJust . parseURI $ "http://example.com:8080")
                                     (12345 :: Integer)
                                     (1000 :: Integer)
-                                    "foo@example.com"
-                                    "bar"
+                                    ident
+                                    pass
                                     Nothing
                                     Nothing
             toNsRestletConfig a `shouldBe` b
         it "does not accept invalid URLs" $ do
-            let a = ("obviously incorrect ha ha", 12345 :: Int, 1000 :: Int, "foo@example.com", "bar")
+            let a = (pack "obviously incorrect ha ha", 12345 :: Int, 1000 :: Int, pack "foo@example.com", pack "bar")
             evaluate (show $ toNsRestletConfig a) `shouldThrow` errorCall "Maybe.fromJust: Nothing"
 
     describe "Restlet Requests" $
         it "creates the expected headers" $ do
-            let (nsid, nsrole, nsident, nspwd) = (12345 :: Int, 1000 :: Int, "foo@example.com", "bar")
+            let (nsid, nsrole, nsident, nspwd) = ( 12345 :: Int
+                                                 , 1000 :: Int
+                                                 , pack "foo@example.com"
+                                                 , pack "bar")
 
-            let a = ("http://example.com:8080", nsid, nsrole, nsident, nspwd)
+            let a = ( pack "http://example.com:8080"
+                    , nsid
+                    , nsrole
+                    , nsident
+                    , nspwd)
             let p = "/test"
             r <- makeRequest (toNsRestletConfig a) p
             qPath r `shouldBe` C.pack p
@@ -65,11 +80,11 @@ suite = do
             tryBsMatch "Authorization" (Prelude.concat ["NLAuth nlauth_account=",
                                                         show nsid,
                                                         ",nlauth_email=",
-                                                        nsident,
+                                                        (unpack nsident),
                                                         ",nlauth_role=",
                                                         show nsrole,
                                                         ",nlauth_signature=",
-                                                        nspwd]) hdrs
+                                                        (unpack nspwd)]) hdrs
 
     describe "Restlet Errors" $ do
         it "should parse GibberishError correctly" $
@@ -117,25 +132,25 @@ exampleNsActions = [
     NsActInvoicePDF (toNsId (9999 :: Int)) exampleCode,
     NsActTransform type1 (toNsId (12345 :: Int)) type2 data1 fields2 exampleCode ]
   where
-    type1    = toNsType "customer"
-    type2    = toNsType "contact"
-    subtype1 = toNsSubtype ("customer","addressbook")
-    filters1 = [toNsFilter ("foo", IsEmpty),
-                toNsFilter ("bar", Is, "1"),
-                toNsFilter ("baz", "beep", EqualTo, "1"),
-                toNsFilter ("fing", Contains, "fang", "foom"),
-                toNsFilter ("person", "location", Between, "rock", "hard place")]
-    cols1 = map toNsSearchCol [["foo"], ["bar"], ["baz", "beep"], ["a column"]]
+    type1    = toNsType $ pack "customer"
+    type2    = toNsType $ pack "contact"
+    subtype1 = toNsSubtype (pack "customer",pack "addressbook")
+    filters1 = [toNsFilter (pack "foo", IsEmpty),
+                toNsFilter (pack "bar", Is, pack "1"),
+                toNsFilter (pack "baz", pack "beep", EqualTo, pack "1"),
+                toNsFilter (pack "fing", Contains, pack "fang", pack "foom"),
+                toNsFilter (pack "person", pack "location", Between, pack "rock", pack "hard place")]
+    cols1 = map toNsSearchCol [[pack "foo"], [pack "bar"], [pack "baz", pack "beep"], [pack "a column"]]
     data1 = toNsData [(pack "foo")         .= (String . pack $ "bar"),
                       (pack "baz")         .= (String . pack $ "frob"),
                       (pack "companyname") .= (String . pack $ "Sturm und Drang Inc.")]
     data2 = toNsData [(pack "id")  .= (String . pack $ "1234"),
                       (pack "foo") .= (String . pack $ "baz")]
-    subdata1 = toNsSublistData [("addressbook", [ [(pack "address1") .= (String . pack $ "1 Boog Street"),
-                                                   (pack "city")     .= (String . pack $ "Sydney")] ] )]
+    subdata1 = toNsSublistData [(pack "addressbook", [ [(pack "address1") .= (String . pack $ "1 Boog Street"),
+                                                        (pack "city")     .= (String . pack $ "Sydney")] ] )]
     multiId = map toNsId [1 :: Int, 2 :: Int, 3 :: Int]
-    fields1 = NsFields ["id", "companyname"]
-    fields2 = NsFields ["phone", "email"]
+    fields1 = NsFields [pack "id", pack "companyname"]
+    fields2 = NsFields [pack "phone", pack "email"]
     exampleCode = NsRestletCode $ pack "alert(\"Hello world!\");"
 
 -- | Test Restlet errors

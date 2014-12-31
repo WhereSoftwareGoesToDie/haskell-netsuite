@@ -224,7 +224,7 @@ doChunkableNS = runAction chunkableRestletExecute
 
 -- | Runs a generic action
 runAction
-    :: (String -> NsRestletConfig -> IO RestletResponse) -- Restlet runner
+    :: (BSL.ByteString -> NsRestletConfig -> IO RestletResponse) -- Restlet runner
     -> NsRestletConfig -- ^ Restlet configuration
     -> (NsRestletCode -> NsAction) -- ^ Partial action that requires
                                    -- restlet code
@@ -237,5 +237,5 @@ runAction runner cfg act = do
         RestletErrorResp{} -> Left $ interpretError result
         _                  -> Right $ responseToAeson result
   where
-    reqJSON = bytesToString . BSL.unpack . encode
+    reqJSON = encode
     restletCode = getDataFileName "Support/Restlet.js" >>= TextIO.readFile

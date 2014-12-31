@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE OverloadedStrings    #-}
 {-# LANGUAGE PackageImports       #-}
 {-# LANGUAGE RankNTypes           #-}
 {-# LANGUAGE RecordWildCards      #-}
@@ -10,29 +11,30 @@ module Netsuite.Restlet.Configuration (
     toNsRestletConfig
 ) where
 
-import Data.List
+import qualified Data.List as L
 import Data.Map
 import Data.Maybe
+import Data.Text
 import Network.URI
 
 data NsRestletConfig = NsRestletConfig {
     restletURI          :: URI,
     restletAccountID    :: Integer,
     restletRole         :: Integer,
-    restletIdent        :: String,
-    restletPassword     :: String,
-    restletUA           :: Maybe String,
-    restletCustomFields :: Maybe (Map [String] [String])
+    restletIdent        :: Text,
+    restletPassword     :: Text,
+    restletUA           :: Maybe Text,
+    restletCustomFields :: Maybe (Map [Text] [Text])
 } deriving (Eq)
 
 instance Show NsRestletConfig where
-    show (NsRestletConfig {..}) = intercalate ", " [
+    show (NsRestletConfig {..}) = L.intercalate ", " [
         show restletURI,
         show restletAccountID,
         show restletRole,
-        restletIdent,
-        restletPassword,
-        maybe "(default user agent)" show restletUA]
+        unpack restletIdent,
+        unpack restletPassword,
+        maybe "(default user agent)" unpack restletUA]
 
 -- | Configuration for Netsuite Restlet endpoint.
 -- Requires the following information to be able to connect:
@@ -51,7 +53,7 @@ class IsNsRestletConfig a where
 -- Role ID
 -- User identifier
 -- User password
-instance (Integral a) => IsNsRestletConfig (String, a, a, String, String) where
+instance (Integral a) => IsNsRestletConfig (Text, a, a, Text, Text) where
     toNsRestletConfig (u, a, r, i, p) = NsRestletConfig (justParseURI u) (toInteger a) (toInteger r) i p Nothing Nothing
 
 -- | Configuration containing:
@@ -61,7 +63,7 @@ instance (Integral a) => IsNsRestletConfig (String, a, a, String, String) where
 -- User identifier
 -- User password
 -- Custom User Agent
-instance (Integral a) => IsNsRestletConfig (String, a, a, String, String, String) where
+instance (Integral a) => IsNsRestletConfig (Text, a, a, Text, Text, Text) where
     toNsRestletConfig (u, a, r, i, p, ua) = NsRestletConfig (justParseURI u) (toInteger a) (toInteger r) i p (Just ua) Nothing
 
 -- | Configuration containing:
@@ -71,7 +73,7 @@ instance (Integral a) => IsNsRestletConfig (String, a, a, String, String, String
 -- User identifier
 -- User password
 -- Mapping of entity types/subtypes to custom fields to retrieve
-instance (Integral a) => IsNsRestletConfig (String, a, a, String, String, Map [String] [String]) where
+instance (Integral a) => IsNsRestletConfig (Text, a, a, Text, Text, Map [Text] [Text]) where
     toNsRestletConfig (u, a, r, i, p, cf) = NsRestletConfig (justParseURI u) (toInteger a) (toInteger r) i p Nothing (Just cf)
 
 -- | Configuration containing:
@@ -82,8 +84,8 @@ instance (Integral a) => IsNsRestletConfig (String, a, a, String, String, Map [S
 -- User password
 -- Custom User Agent
 -- Mapping of entity types/subtypes to custom fields to retrieve
-instance (Integral a) => IsNsRestletConfig (String, a, a, String, String, String, Map [String] [String]) where
+instance (Integral a) => IsNsRestletConfig (Text, a, a, Text, Text, Text, Map [Text] [Text]) where
     toNsRestletConfig (u, a, r, i, p, ua, cf) = NsRestletConfig (justParseURI u) (toInteger a) (toInteger r) i p (Just ua) (Just cf)
 
-justParseURI :: String -> URI
-justParseURI = fromJust . parseURI
+justParseURI :: Text -> URI
+justParseURI = fromJust . parseURI . unpack

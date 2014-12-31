@@ -9,12 +9,14 @@ module Netsuite.Restlet (
 ) where
 
 import qualified Data.ByteString.Char8 as BS8
+import qualified Data.ByteString.Lazy.Char8 as BSL8
 
 import Control.Applicative
 import Control.Exception
 import Data.Char
 import qualified Data.List as List
 import Data.Monoid
+import Data.Text hiding (concat, filter, map)
 import Data.Tuple.Sequence (sequenceT)
 import Network.URI
 
@@ -32,14 +34,20 @@ import Netsuite.Restlet.Response
 import Netsuite.Restlet.ResponseHandler
 
 -- | External restlet execution function, with quick config check.
-restletExecute :: String -> NsRestletConfig -> IO RestletResponse
+restletExecute
+    :: BSL8.ByteString -- ^ JSON payload
+    -> NsRestletConfig -- ^ RESTlet connector config
+    -> IO RestletResponse -- ^ Response from RESTlet
 restletExecute s cfg =
     case configOK cfg of
         Just bd -> restletExecute' s cfg bd
         Nothing -> error "Configuration not valid"
 
 -- | Chunked restlet execution function.
-chunkableRestletExecute :: String -> NsRestletConfig -> IO RestletResponse
+chunkableRestletExecute
+    :: BSL8.ByteString -- ^ JSON payload
+    -> NsRestletConfig -- ^ RESTlet connector config
+    -> IO RestletResponse -- ^ Response from RESTlet
 chunkableRestletExecute s cfg = chunkableRestletExecute' mempty False s cfg
   where
     -- | Chunked restlet execution function internal.
@@ -63,7 +71,10 @@ chunkableRestletExecute s cfg = chunkableRestletExecute' mempty False s cfg
 
 -- | Checks to see if our URL config is valid.
 -- @TODO: Add more checks.
-configOK :: NsRestletConfig -> Maybe (String, Integer, String)
+configOK
+    :: NsRestletConfig -- ^ RESTlet connector config
+    -> Maybe (String, Integer, String) -- ^ Triple of hostname, port number, path
+                                       -- (if configuration is valid)
 configOK = sequenceT . breakdownURI . restletURI
   where
     -- | Chop up a URI into a tuple of three maybes; hostname, port and path.
@@ -80,20 +91,22 @@ configOK = sequenceT . breakdownURI . restletURI
             x  -> read x
 
 -- | Internal restlet execution function.
-restletExecute' :: String -> NsRestletConfig -> (String, Integer, String) -> IO RestletResponse
+restletExecute'
+    :: BSL8.ByteString -- ^ JSON payload
+    -> NsRestletConfig -- ^ RESTlet connector config
+    -> (String, Integer, String) -- ^ Triple of hostname, port number, path
+    -> IO RestletResponse -- ^ Response from RESTlet
 restletExecute' s cfg (_hostname, _port, _path) = bracket est teardown process
   where
     est = establish (uriScheme $ restletURI cfg) _hostname _port
     teardown = closeConnection
     process c = do
         q  <- makeRequest cfg _path
-        is <- Streams.fromByteString (bsPackedW8s s)
-        -- putStrLn $ show s
+        is <- Streams.fromByteString (BSL8.toStrict s)
         _ <- sendRequest c q (inputStreamBody is)
         catch (RestletOk . (: []) <$> receiveResponse c restletResponseHandler) debugError
 
-    debugError e = return . RestletErrorResp $ e
-    -- putStrLn $ show e
+    debugError = return . RestletErrorResp
 
     -- | Establish HTTP or HTTPS connection.
     establish rl_scheme h p =
@@ -114,7 +127,10 @@ restletExecute' s cfg (_hostname, _port, _path) = bracket est teardown process
             newIORef ctx
 
 -- | Construct the HTTP headers to send.
-makeRequest :: NsRestletConfig -> String -> IO Request
+makeRequest
+    :: NsRestletConfig -- ^ RESTlet connector config
+    -> String -- ^ Path
+    -> IO Request -- ^ Request object
 makeRequest c p = buildRequest $ do
     http POST (bsPackedW8s p)
     setContentType "application/json"
@@ -129,6 +145,6 @@ makeRequest c p = buildRequest $ do
     pcfg = List.intercalate "," . map (\(k, v) -> concat [k, "=", v]) . nsAuthPairs
 
     nsAuthPairs c' = [ ("nlauth_account",   show $ restletAccountID c')
-                     , ("nlauth_email",     restletIdent c')
+                     , ("nlauth_email",     unpack $ restletIdent c')
                      , ("nlauth_role",      show $ restletRole c')
-                     , ("nlauth_signature", normalizeEscape $ restletPassword c')]
+                     , ("nlauth_signature", normalizeEscape $ unpack $ restletPassword c')]
