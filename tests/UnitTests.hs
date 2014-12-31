@@ -37,12 +37,19 @@ suite = do
                 y              -> error $ show y ++ " should be a list of valid JSON objects"
     describe "NsRestletConfig" $ do
         it "can create identical NsRestletConfig object from dissimilar origins" $ do
-            let a = (pack "http://example.com:8080", 12345 :: Int, 1000 :: Int, pack "foo@example.com", pack "bar")
+            let ident = pack "foo@example.com"
+            let pass = pack "bar"
+
+            let a = (pack "http://example.com:8080"
+                    , 12345 :: Int
+                    , 1000 :: Int
+                    , ident
+                    , pass)
             let b = NsRestletConfig (fromJust . parseURI $ "http://example.com:8080")
                                     (12345 :: Integer)
                                     (1000 :: Integer)
-                                    (pack "foo@example.com")
-                                    (pack "bar")
+                                    ident
+                                    pass
                                     Nothing
                                     Nothing
             toNsRestletConfig a `shouldBe` b
@@ -52,9 +59,16 @@ suite = do
 
     describe "Restlet Requests" $
         it "creates the expected headers" $ do
-            let (nsid, nsrole, nsident, nspwd) = (12345 :: Int, 1000 :: Int, pack "foo@example.com", pack "bar")
+            let (nsid, nsrole, nsident, nspwd) = ( 12345 :: Int
+                                                 , 1000 :: Int
+                                                 , pack "foo@example.com"
+                                                 , pack "bar")
 
-            let a = (pack "http://example.com:8080", nsid, nsrole, nsident, nspwd)
+            let a = ( pack "http://example.com:8080"
+                    , nsid
+                    , nsrole
+                    , nsident
+                    , nspwd)
             let p = "/test"
             r <- makeRequest (toNsRestletConfig a) p
             qPath r `shouldBe` C.pack p
