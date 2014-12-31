@@ -11,7 +11,7 @@ module Netsuite.Restlet.Configuration (
     toNsRestletConfig
 ) where
 
---import Data.List
+import qualified Data.List as L
 import Data.Map
 import Data.Maybe
 import Data.Text
@@ -28,13 +28,13 @@ data NsRestletConfig = NsRestletConfig {
 } deriving (Eq)
 
 instance Show NsRestletConfig where
-    show (NsRestletConfig {..}) = unpack $ intercalate ", " [
-        pack . show $ restletURI,
-        pack . show $ restletAccountID,
-        pack . show $ restletRole,
-        restletIdent,
-        restletPassword,
-        maybe "(default user agent)" id restletUA]
+    show (NsRestletConfig {..}) = L.intercalate ", " [
+        show restletURI,
+        show restletAccountID,
+        show restletRole,
+        unpack restletIdent,
+        unpack restletPassword,
+        maybe "(default user agent)" unpack restletUA]
 
 -- | Configuration for Netsuite Restlet endpoint.
 -- Requires the following information to be able to connect:

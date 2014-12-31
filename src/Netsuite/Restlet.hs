@@ -103,12 +103,10 @@ restletExecute' s cfg (_hostname, _port, _path) = bracket est teardown process
     process c = do
         q  <- makeRequest cfg _path
         is <- Streams.fromByteString (BSL8.toStrict s)
-        -- putStrLn $ show s
         _ <- sendRequest c q (inputStreamBody is)
         catch (RestletOk . (: []) <$> receiveResponse c restletResponseHandler) debugError
 
-    debugError e = return . RestletErrorResp $ e
-    -- putStrLn $ show e
+    debugError = return . RestletErrorResp
 
     -- | Establish HTTP or HTTPS connection.
     establish rl_scheme h p =
