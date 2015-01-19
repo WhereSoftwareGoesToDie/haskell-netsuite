@@ -67,7 +67,7 @@ let testCfg = (endpoint, -- NetSuite endpoint URL
                "netsuite-user@yourcompany.example.com", -- NetSuite account ident
                "mypassword", -- NetSuite account password
                "My Netsuite Client", -- user agent string
-               fromList $ [["customer"], ["customfield1", "customfield2"]] -- custom fields as a HashMap [String] [String]
+               fromList $ [(["customer"], ["customfield1", "customfield2"])] -- custom fields as a HashMap [String] [String]
                )
 
 -- The configuration below also describes a full NsRestletConfig, but it uses the default user agent and fields.
