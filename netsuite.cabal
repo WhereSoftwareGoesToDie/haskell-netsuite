@@ -102,4 +102,5 @@ executable netsuite-type-scraper
                      , io-streams
                      , safe
                      , tagsoup
+                     , text
 

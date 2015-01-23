@@ -6,7 +6,11 @@ import Control.Exception
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as BS8
 import Data.IORef (newIORef, readIORef)
+import Data.List
+import Data.Maybe
 import Data.Monoid
+import Data.Text (Text)
+import qualified Data.Text as T
 import Network.Http.Client
 import OpenSSL (withOpenSSL)
 import Safe
@@ -17,9 +21,26 @@ import Text.HTML.TagSoup
 import Text.StringLike
 
 data RecordBlob = RecordBlob
-    { _rbName :: [String]
-    , _rbFields :: [String]
-    } deriving (Show)
+    { _rbName :: [Text]
+    , _rbFields :: [Text]
+    }
+
+instance Show RecordBlob where
+    show (RecordBlob (a:b:_) f) = "-- " <> T.unpack a <> " > " <> T.unpack b
+        <> "\n" <> "nsTypeFields (\""
+        <> T.unpack a <> "\":\"" <> T.unpack b <> "\":_) = ["
+        <> showRemainder f
+    show (RecordBlob (a:_) f) = "-- " <> T.unpack a
+        <> "\n" <> "nsTypeFields (\""
+        <> T.unpack a <> "\":_) = ["
+        <> showRemainder f
+
+showRemainder :: [Text] -> String
+showRemainder f = (concat . fmap showField $ zip [0..] f) <> " ]\n\n"
+
+showField :: (Int, Text) -> String
+showField (0,f) = "\n    \"" <> (T.unpack f) <> "\""
+showField (_,f) = "\n  , \"" <> (T.unpack f) <> "\""
 
 main :: IO ()
 main = do
@@ -28,15 +49,49 @@ main = do
         (t:_) -> do
             r <- req t
             let tags = parseTags $ BS8.unpack r
-            print r
-            print $ getBlobs tags
+            let b = getBlobs tags
+            mapM_ print b
         _     -> putStrLn "USAGE: netsuite-type-scraper <type name>" >> exitFailure
 
 -- | Get Record Blobs from HTML
-getBlobs :: (Show s, StringLike s) => [Tag s] -> String -- [RecordBlob]
-getBlobs t = toString $
-    stringHead itemInnerValue $
-    sections (\a -> a ~== ("<div class='record_id'>" :: String)) t
+getBlobs :: (Show s, StringLike s) => [Tag s] -> [RecordBlob]
+getBlobs t =
+    [RecordBlob [baseType] baseFields] <> fmap sublistBlob sublistTables
+  where
+    -- generic
+    pk = T.pack . toString . stringHead itemInnerValue
+    -- base
+    baseType = T.replace (T.pack "Internal ID: ") (T.pack "") .
+               pk .
+               sections (~== ("<div class='record_id'>" :: String)) $
+               t
+    recordTables = tagsBetween "<table class='record_table'>" "</table>" t
+    rtRows = tagsBetween "<tr>" "</tr>" . fromMaybe [] .
+             headMay $ recordTables
+    baseFields = fmap linkInner . catMaybes .
+                 fmap (headMay . tagsBetween "<td>" "</td>") . fromMaybe [] .
+                 tailMay $ rtRows
+    linkInner  = T.pack . toString . stringHead itemInnerValue .
+                 sections (~== ("<a>" :: String))
+    -- sublists
+    sublists      = tagsBetween "<div class='sublist'>" "</table>" t
+    sublistTables = fmap (fromMaybe [] . tailMay . tagsBetween "<tr>" "</tr>") $ sublists
+    sublistBlob r = RecordBlob [baseType, sublistName r] (sublistCnames r)
+    sublistName r = pk .
+                    sections (~== ("</a>" :: String)) .
+                    fromMaybe [] . headMay .
+                    tagsBetween "<td>" "</td>" . fromMaybe [] $
+                    headMay r
+    sublistCnames r = [headCname r] <> tailCname r
+    headCname = pk .
+                tagsBetween "<div>" "</div>" .
+                fromMaybe [] . headMay .
+                fromMaybe [] . tailMay .
+                tagsBetween "<td>" "</td>" . head
+    tailCname = fmap (pk .
+                    tagsBetween "<div>" "</div>" .
+                    fromMaybe [] . headMay .
+                    tagsBetween "<td>" "</td>") . tail
 
 -- | Fetch the Netsuite docs page.
 req :: String -> IO ByteString
@@ -67,6 +122,12 @@ req nsType = bracket est teardown process
         global = unsafePerformIO $ do
             ctx <- baselineContextSSL
             newIORef ctx
+
+-- | Grab everything between two tags
+tagsBetween :: (Show s, StringLike s) => String -> String -> [Tag s] -> [[Tag s]]
+tagsBetween s e t = fmap (takeWhile (~/= e)) .
+                    sections (~== s) $
+                    t
 
 -- | Get a string out of something
 stringHead :: (Show s, StringLike s) => (a -> s) -> [a] -> s
