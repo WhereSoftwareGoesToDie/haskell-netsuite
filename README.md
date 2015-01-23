@@ -248,5 +248,6 @@ If you need more types, you can add definitions using the included
 `cabal run -- netsuite-type-scraper entitytype.hs > entitytype.hs`
 
 to extract type definitions and dump them into a text file. From there,
-you can copy the rendered code into `lib/Netsuite/Types/Fields.hs` and
-submit a pull request for inclusion.
+you can copy the rendered code into `lib/Netsuite/Types/Fields.hs`,
+separating out nsTypeFields and nsSubtypeFields declarations along the way,
+and submit a pull request for inclusion.
