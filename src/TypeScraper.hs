@@ -26,11 +26,11 @@ data RecordBlob = RecordBlob
     }
 
 instance Show RecordBlob where
-    show (RecordBlob (a:b:_) f) = "-- " <> T.unpack a <> " > " <> T.unpack b
+    show (RecordBlob (a:b:_) f) = "-- | " <> T.unpack a <> " > " <> T.unpack b
         <> "\n" <> "nsTypeFields (\""
         <> T.unpack a <> "\":\"" <> T.unpack b <> "\":_) = ["
         <> showRemainder f
-    show (RecordBlob (a:_) f) = "-- " <> T.unpack a
+    show (RecordBlob (a:_) f) = "-- | " <> T.unpack a
         <> "\n" <> "nsTypeFields (\""
         <> T.unpack a <> "\":_) = ["
         <> showRemainder f

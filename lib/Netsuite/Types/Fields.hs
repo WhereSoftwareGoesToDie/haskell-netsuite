@@ -1642,5 +1642,644 @@ nsSubtypeFields ("salesorder":"shipgroup":_) = [
     "sourceaddress",
     "weight"]
 
+-- | serviceitem
+nsTypeFields ("serviceitem":_) = [
+    "amortizationperiod"
+  , "amortizationtemplate"
+  , "auctionquantity"
+  , "auctiontype"
+  , "availabletopartners"
+  , "billingschedule"
+  , "buyitnowprice"
+  , "class"
+  , "conditionenabled"
+  , "conditionhelpurl"
+  , "cost"
+  , "costcategory"
+  , "costestimate"
+  , "costestimatetype"
+  , "costunits"
+  , "createddate"
+  , "createjob"
+  , "currency"
+  , "customform"
+  , "deferralaccount"
+  , "deferredrevenueaccount"
+  , "department"
+  , "displayinebaystore"
+  , "displayname"
+  , "dontshowprice"
+  , "ebayhandlingtime"
+  , "ebayintlinsurancefee"
+  , "ebayintlpackagehandlingfee"
+  , "ebayintlshipinsurance"
+  , "ebayintlshippingitem1"
+  , "ebayintlshippingitem2"
+  , "ebayintlshippingitem3"
+  , "ebayisintlcalculatedrate"
+  , "ebayisirregularpackage"
+  , "ebayitemdescription"
+  , "ebayitemlocdisplay"
+  , "ebayitemloczipcode"
+  , "ebayitemlots"
+  , "ebayitemsubtitle"
+  , "ebayitemtitle"
+  , "ebayitemweightamt"
+  , "ebaylayout"
+  , "ebaypackagetype"
+  , "ebaypagecounter"
+  , "ebayrelistingoption"
+  , "ebaytheme"
+  , "ebaythemegroup"
+  , "endauctionswhenoutofstock"
+  , "enforceminqtyinternally"
+  , "excludefromsitemap"
+  , "expenseaccount"
+  , "externalid"
+  , "featureddescription"
+  , "gallery"
+  , "galleryfeatured"
+  , "gifttypeexpressship"
+  , "gifttypegiftwrap"
+  , "gifttypeshiptorecipient"
+  , "handlinggroup"
+  , "imagesgroup"
+  , "imageslocation"
+  , "includechildren"
+  , "incomeaccount"
+  , "internalid"
+  , "iscalculatedrate"
+  , "isdonationitem"
+  , "isfulfillable"
+  , "isgcocompliant"
+  , "isinactive"
+  , "isonline"
+  , "issueproduct"
+  , "itemcondition"
+  , "itemhandlingfee"
+  , "itemid"
+  , "iteminsurancefee"
+  , "itemoptions"
+  , "itemshipinsurance"
+  , "itemtype"
+  , "lastmodifieddate"
+  , "listimmediate"
+  , "listingduration"
+  , "listingstartdate"
+  , "listingstarttime"
+  , "location"
+  , "matrixtype"
+  , "maxdonationamount"
+  , "metataghtml"
+  , "minimumquantity"
+  , "minimumquantityunits"
+  , "nopricemessage"
+  , "numactivelistings"
+  , "numcurrentlylisted"
+  , "offersupport"
+  , "outofstockbehavior"
+  , "outofstockmessage"
+  , "packageheight"
+  , "packagelength"
+  , "packagewidth"
+  , "pagetitle"
+  , "parent"
+  , "pricinggroup"
+  , "primarycatdisplayname"
+  , "primarycategory"
+  , "purchasedescription"
+  , "purchaseunit"
+  , "refundgivenas"
+  , "relateditemsdescription"
+  , "reserveprice"
+  , "residual"
+  , "returnpolicy"
+  , "returnpolicydetails"
+  , "returnshippingpaidby"
+  , "returnswithin"
+  , "revrecschedule"
+  , "salesdescription"
+  , "saleunit"
+  , "searchkeywords"
+  , "secondarycatdisplayname"
+  , "secondarycategory"
+  , "sellonebay"
+  , "shipasia"
+  , "shipaustralia"
+  , "shipcanada"
+  , "shipeurope"
+  , "shipgermany"
+  , "shipjapan"
+  , "shipmexico"
+  , "shipnorthsouthamerica"
+  , "shippingdomesticmethodsgroup"
+  , "shippingdomgroup"
+  , "shippingintlgroup"
+  , "shippingintlgroup1"
+  , "shippingintlgroup2"
+  , "shippingintlgroup3"
+  , "shippingitem1"
+  , "shippingitem2"
+  , "shippingitem3"
+  , "shippinglocationsgroup"
+  , "shippingpackaginggroup"
+  , "shippingrate1"
+  , "shippingrate2"
+  , "shippingrate3"
+  , "shipuk"
+  , "shipworldwide"
+  , "showasgift"
+  , "showdefaultdonationamount"
+  , "sitemappriority"
+  , "softdescriptor"
+  , "standardimages"
+  , "startingprice"
+  , "storecatdisplayname"
+  , "storecatdisplayname2"
+  , "storecategory"
+  , "storecategory2"
+  , "storedescription"
+  , "storedetaileddescription"
+  , "storedisplayimage"
+  , "storedisplayname"
+  , "storedisplaythumbnail"
+  , "storeitemtemplate"
+  , "subsidiary"
+  , "subtype"
+  , "supersizeimages"
+  , "taxable"
+  , "taxschedule"
+  , "templatesgroup"
+  , "unitstype"
+  , "upccode"
+  , "urlcomponent"
+  , "vendorname"
+  , "vsoedeferral"
+  , "vsoedelivered"
+  , "vsoepermitdiscount"
+  , "vsoeprice"
+  , "vsoesopgroup"
+  , "willship" ]
+
+
+-- | serviceitem > price1
+nsTypeFields ("serviceitem":"price1":_) = [
+    "currency"
+  , "discount"
+  , "discountdisplay"
+  , "pricelevel" ]
+
+
+-- | serviceitem > price2
+nsTypeFields ("serviceitem":"price2":_) = [
+    "currency"
+  , "discount"
+  , "discountdisplay"
+  , "pricelevel" ]
+
+
+-- | serviceitem > price3
+nsTypeFields ("serviceitem":"price3":_) = [
+    "currency"
+  , "discount"
+  , "discountdisplay"
+  , "pricelevel" ]
+
+
+-- | serviceitem > price4
+nsTypeFields ("serviceitem":"price4":_) = [
+    "currency"
+  , "discount"
+  , "discountdisplay"
+  , "pricelevel" ]
+
+
+-- | serviceitem > price5
+nsTypeFields ("serviceitem":"price5":_) = [
+    "currency"
+  , "discount"
+  , "discountdisplay"
+  , "pricelevel" ]
+
+
+-- | serviceitem > sitecategory
+nsTypeFields ("serviceitem":"sitecategory":_) = [
+    "category"
+  , "categorydescription"
+  , "isdefault"
+  , "website" ]
+
+-- | inventorydetail
+nsTypeFields ("inventorydetail":_) = [
+    "customform"
+  , "externalid"
+  , "item"
+  , "itemdescription"
+  , "location"
+  , "quantity"
+  , "tolocation"
+  , "unit" ]
+
+-- | inventorydetail > inventoryassignment
+nsTypeFields ("inventorydetail":"inventoryassignment":_) = [
+    "binnumber"
+  , "expirationdate"
+  , "internalid"
+  , "inventorydetail"
+  , "issueinventorynumber"
+  , "quantity"
+  , "quantityavailable" ]
+
+-- | lead
+nsTypeFields ("lead":_) = [
+    "accessrole"
+  , "accountnumber"
+  , "altemail"
+  , "altphone"
+  , "autoname"
+  , "balance"
+  , "billaddr1"
+  , "billaddr2"
+  , "billaddr3"
+  , "billcity"
+  , "billcountry"
+  , "billstate"
+  , "billzip"
+  , "buyingreason"
+  , "buyingtimeframe"
+  , "campaigncategory"
+  , "category"
+  , "clickstream"
+  , "comments"
+  , "companyname"
+  , "consolbalance"
+  , "consoldaysoverdue"
+  , "consoldepositbalance"
+  , "consoloverduebalance"
+  , "consolunbilledorders"
+  , "contact"
+  , "creditholdoverride"
+  , "creditlimit"
+  , "currency"
+  , "currencyprecision"
+  , "customform"
+  , "datecreated"
+  , "daysoverdue"
+  , "defaultaddress"
+  , "defaultbankaccount"
+  , "depositbalance"
+  , "draccount"
+  , "email"
+  , "emailpreference"
+  , "emailtransactions"
+  , "entityid"
+  , "entitystatus"
+  , "estimatedbudget"
+  , "externalid"
+  , "fax"
+  , "faxtransactions"
+  , "firstname"
+  , "firstvisit"
+  , "fxaccount"
+  , "giveaccess"
+  , "globalsubscriptionstatus"
+  , "homephone"
+  , "image"
+  , "isbudgetapproved"
+  , "isinactive"
+  , "isjob"
+  , "isperson"
+  , "keywords"
+  , "language"
+  , "lastmodifieddate"
+  , "lastname"
+  , "lastpagevisited"
+  , "lastvisit"
+  , "leadsource"
+  , "middlename"
+  , "mobilephone"
+  , "monthlyclosing"
+  , "negativenumberformat"
+  , "numberformat"
+  , "otherrelationships"
+  , "overduebalance"
+  , "parent"
+  , "partner"
+  , "phone"
+  , "phoneticname"
+  , "prefccprocessor"
+  , "pricelevel"
+  , "printoncheckas"
+  , "printtransactions"
+  , "receivablesaccount"
+  , "referrer"
+  , "resalenumber"
+  , "salesgroup"
+  , "salesreadiness"
+  , "salesrep"
+  , "salutation"
+  , "sendemail"
+  , "stage"
+  , "strength"
+  , "subsidiary"
+  , "syncpartnerteams"
+  , "syncsalesteams"
+  , "taxable"
+  , "taxexempt"
+  , "taxfractionunit"
+  , "taxitem"
+  , "taxrounding"
+  , "terms"
+  , "territory"
+  , "title"
+  , "unbilledorders"
+  , "unsubscribe"
+  , "url"
+  , "vatregnumber"
+  , "visits"
+  , "weblead" ]
+
+
+-- | lead > addressbook
+nsTypeFields ("lead":"addressbook":_) = [
+    "addr1"
+  , "addr2"
+  , "addr3"
+  , "addressee"
+  , "addressid"
+  , "addrtext"
+  , "attention"
+  , "city"
+  , "country"
+  , "defaultbilling"
+  , "defaultshipping"
+  , "displaystate"
+  , "id"
+  , "internalid"
+  , "isresidential"
+  , "label"
+  , "override"
+  , "phone"
+  , "state"
+  , "zip" ]
+
+
+-- | lead > contactroles
+nsTypeFields ("lead":"contactroles":_) = [
+    "contact"
+  , "email"
+  , "giveaccess"
+  , "passwordconfirm"
+  , "role"
+  , "sendemail"
+  , "strength" ]
+
+
+-- | lead > currency
+nsTypeFields ("lead":"currency":_) = [
+    "balance"
+  , "consolbalance"
+  , "consoldepositbalance"
+  , "consoloverduebalance"
+  , "consolunbilledorders"
+  , "currency"
+  , "currencyformatsample"
+  , "depositbalance"
+  , "displaysymbol"
+  , "overduebalance"
+  , "overridecurrencyformat"
+  , "symbolplacement"
+  , "unbilledorders" ]
+
+
+-- | lead > download
+nsTypeFields ("lead":"download":_) = [
+    "expiration"
+  , "file"
+  , "licensecode"
+  , "remainingdownloads" ]
+
+
+-- | lead > grouppricing
+nsTypeFields ("lead":"grouppricing":_) = [
+    "group"
+  , "level" ]
+
+
+-- | lead > itempricing
+nsTypeFields ("lead":"itempricing":_) = [
+    "currency"
+  , "item"
+  , "level"
+  , "price" ]
+
+
+-- | lead > partners
+nsTypeFields ("lead":"partners":_) = [
+    "contribution"
+  , "customer"
+  , "id"
+  , "isprimary"
+  , "partner"
+  , "partnerrole" ]
+
+
+-- | lead > salesteam
+nsTypeFields ("lead":"salesteam":_) = [
+    "contribution"
+  , "customer"
+  , "employee"
+  , "id"
+  , "isprimary"
+  , "issalesrep"
+  , "salesrole" ]
+
+
+-- | message
+nsTypeFields ("message":_) = [
+    "activity"
+  , "author"
+  , "authoremail"
+  , "bcc"
+  , "cc"
+  , "contact"
+  , "emailed"
+  , "entity"
+  , "entitytype"
+  , "externalid"
+  , "hasattachment"
+  , "lastmodifieddate"
+  , "message"
+  , "recipient"
+  , "recipientemail"
+  , "record"
+  , "recordtype"
+  , "subject"
+  , "template"
+  , "time"
+  , "transaction" ]
+
+
+-- | message > mediaitem
+nsTypeFields ("message":"mediaitem":_) = [
+    "mediaitem" ]
+
+
+-- | opportunity
+nsTypeFields ("opportunity":_) = [
+    "actionitem"
+  , "altsalesrangehigh"
+  , "altsalesrangelow"
+  , "altsalestotal"
+  , "balance"
+  , "billaddr1"
+  , "billaddr2"
+  , "billaddr3"
+  , "billaddress"
+  , "billaddressee"
+  , "billaddresslist"
+  , "billattention"
+  , "billcity"
+  , "billcountry"
+  , "billisresidential"
+  , "billphone"
+  , "billstate"
+  , "billzip"
+  , "buyingreason"
+  , "buyingtimeframe"
+  , "class"
+  , "consolidatebalance"
+  , "createddate"
+  , "currency"
+  , "currencyname"
+  , "currencysymbol"
+  , "customform"
+  , "department"
+  , "documentstatus"
+  , "entity"
+  , "entitynexus"
+  , "entitystatus"
+  , "estgrossprofit"
+  , "estgrossprofitpercent"
+  , "estimatedbudget"
+  , "exchangerate"
+  , "expectedclosedate"
+  , "externalid"
+  , "forecasttype"
+  , "isbasecurrency"
+  , "isbudgetapproved"
+  , "job"
+  , "lastmodifieddate"
+  , "leadsource"
+  , "location"
+  , "memo"
+  , "nexus"
+  , "partner"
+  , "probability"
+  , "projaltsalesamt"
+  , "projectedtotal"
+  , "rangehigh"
+  , "rangelow"
+  , "salesgroup"
+  , "salesreadiness"
+  , "salesrep"
+  , "shipaddr1"
+  , "shipaddr2"
+  , "shipaddr3"
+  , "shipaddress"
+  , "shipaddressee"
+  , "shipaddresslist"
+  , "shipattention"
+  , "shipcity"
+  , "shipcountry"
+  , "shipisresidential"
+  , "shipoverride"
+  , "shipphone"
+  , "shipstate"
+  , "shipzip"
+  , "source"
+  , "status"
+  , "statusRef"
+  , "subsidiary"
+  , "syncpartnerteams"
+  , "syncsalesteams"
+  , "title"
+  , "total"
+  , "totalcostestimate"
+  , "trandate"
+  , "tranid"
+  , "unbilledorders"
+  , "weightedtotal"
+  , "winlossreason" ]
+
+
+-- | opportunity > competitors
+nsTypeFields ("opportunity":"competitors":_) = [
+    "competitor"
+  , "id"
+  , "notes"
+  , "url"
+  , "winner" ]
+
+
+-- | opportunity > item
+nsTypeFields ("opportunity":"item":_) = [
+    "altsalesamt"
+  , "amount"
+  , "billingschedule"
+  , "billvariancestatus"
+  , "costestimate"
+  , "costestimaterate"
+  , "costestimatetype"
+  , "daysbeforeexpiration"
+  , "deferrevrec"
+  , "description"
+  , "expectedshipdate"
+  , "fromjob"
+  , "id"
+  , "isestimate"
+  , "istaxable"
+  , "isvsoebundle"
+  , "item"
+  , "itemsubtype"
+  , "itemtype"
+  , "job"
+  , "line"
+  , "linenumber"
+  , "matrixtype"
+  , "options"
+  , "price"
+  , "printitems"
+  , "quantity"
+  , "rate"
+  , "rateschedule"
+  , "units" ]
+
+
+-- | opportunity > partners
+nsTypeFields ("opportunity":"partners":_) = [
+    "contribution"
+  , "id"
+  , "isprimary"
+  , "partner"
+  , "partnerrole"
+  , "transaction" ]
+
+
+-- | opportunity > salesteam
+nsTypeFields ("opportunity":"salesteam":_) = [
+    "contribution"
+  , "employee"
+  , "id"
+  , "isprimary"
+  , "issalesrep"
+  , "salesrole"
+  , "transaction" ]
+
+
+
+
+-- * INSERT NEW ITEMS BEFORE THIS POINT *
+
 -- | Catch-all
 nsSubtypeFields _ = []

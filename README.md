@@ -215,3 +215,38 @@ Netsuite Types
   * Partners
   * Sales Team
   * Shipping Group
+* Service Item
+  * Price 1
+  * Price 2
+  * Price 3
+  * Price 4
+  * Price 5
+  * Site Category
+* Inventory Detail
+  * Inventory Assignment
+* Lead
+  * Address Book
+  * Contact Roles
+  * Credit Cards
+  * Currency
+  * Download
+  * Group Pricing
+  * Item Pricing
+  * Partners
+  * Sales Team
+* Message
+  * Media Item
+* Opportunity
+  * Competitors
+  * Item
+  * Partners
+  * Sales Team
+
+If you need more types, you can add definitions using the included
+`netsuite-type-scraper` executable. Just run at the command line:
+
+`cabal run -- netsuite-type-scraper entitytype.hs > entitytype.hs`
+
+to extract type definitions and dump them into a text file. From there,
+you can copy the rendered code into `lib/Netsuite/Types/Fields.hs` and
+submit a pull request for inclusion.
