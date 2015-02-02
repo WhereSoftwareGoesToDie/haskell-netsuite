@@ -87,7 +87,6 @@ test-suite unit-tests
                      , vector
 
 executable netsuite-type-scraper
-  type:                exitcode-stdio-1.0
   hs-source-dirs:      src
   main-is:             TypeScraper.hs
   default-language:    Haskell2010
